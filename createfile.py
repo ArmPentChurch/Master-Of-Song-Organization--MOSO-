@@ -3,14 +3,6 @@ import os, docx, time, re
 import json
 from docx.shared import Pt,RGBColor
 
-
-
-def getTemplate():
-    wordFile = open("Choir Songs Template.dotx", 'r', encoding='utf_8')
-    template = wordFile.read()
-    wordFile.close
-    return template
-
 month = time.strftime('%m')
 year = time.strftime('%y')
 fullYear = time.strftime('%Y')
@@ -61,12 +53,12 @@ def getDocTextAndIndentation(filePath:str, my_doc):
     return my_doc
 
 def getRandomDoc():
+    """Gets a random song template"""
     from random import randint
     from glob import glob
-    rDoc = randint(0, 3) #Choose a random number from 4 numbers
-    DrivePath = os.environ.get("OneDrive")
-    posible_rand_docs = glob(DrivePath+"\\*.docx")
-    return docx.Document(posible_rand_docs[rDoc])
+    posible_rand_docs = glob("song_templates\\*.docx")
+    random_doc_num = randint(0, len(posible_rand_docs))
+    return docx.Document(posible_rand_docs[random_doc_num])
 
 #parses the data inputed and sends back a python-docx file object
 def getPcSongs(songs, imp, user):
