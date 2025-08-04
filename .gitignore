@@ -15,3 +15,4 @@ testsongs.json
 song_sorter.py
 .DS_Store
 /venv
+/.vscode
