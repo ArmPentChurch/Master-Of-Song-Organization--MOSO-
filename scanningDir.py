@@ -2,79 +2,7 @@ from genericpath import isfile
 import json
 from pprint import pprint
 import os, datetime, re
-
-
-def getRecentSongs():
-    # Todo: posibily change function to always append to it the latest files instead of just rewriting it always
-    # Also bc the program sorts the songs here the current sorting process is now made partly obsolete, but maybe not bc program still needs to sort with3 month window
-    import WordSongUpdater
-    #     Finds all possible dir/paths to docx files that possibly can be used, with datetime and os
-    songBuffer = ""
-    user = os.environ.get("USERNAME")
-    three_months_from_now = (datetime.date.today() + datetime.timedelta(days=-90)).strftime(
-        '%Y')  # currently returns '2023' to use multi funnel/net system to go from big -> fine net
-    RelevantDate = (datetime.datetime.today() + datetime.timedelta(days=-90))
-    with os.scandir(r'C:\Users\{}\OneDrive\Երգեր'.format(user)) as PosFiles:
-        for file in PosFiles:
-            if three_months_from_now in file.name:
-
-                if "." in file.name:
-
-                    date = datetime.datetime.strptime(file.name, '%m.%Y')
-                    if date > RelevantDate:
-
-                        songBuffer += "\n" + file.path
-                        # print(file.path)
-                        for docs in os.scandir(r'C:\Users\{}\OneDrive\Երգեր\{}'.format(user, file.name)):
-
-                            # this can be a bit redundant sometimes however its also safer
-                            docName = re.sub(".docx", "", docs.name)
-                            try:
-                                dateD = datetime.datetime.strptime(docName, "%m.%d.%y")
-                            except:
-                                dateD = datetime.datetime(1970, 1, 1, 0, 0, 0)
-                            if dateD > RelevantDate:
-                                # pass
-                                # print(docName) # this is a str not a os.direntry
-                                # print(docs.path) # EX: C:\Users\Armne\OneDrive\Երգեր\09.2023\09.28.23.docx
-                                songBuffer += "\nFilename/Date: " + docName
-                                songBuffer += "\nSongs in that file: " + WordSongUpdater.getNums(docs.path)
-                                # Now it can be passed to WordSongUpdater.getNums()
-                else:
-                    for folders in os.scandir(r'C:\Users\{}\OneDrive\Երգեր\{}'.format(user, file.name)):
-                        # print(folders.path)
-                        date = datetime.datetime.strptime(folders.name, '%m.%Y')
-                        if date > RelevantDate:
-                            songBuffer += "\n" + folders.path
-                            docName = re.sub(".docx", "", folders.name)
-
-                            try:
-                                dateD = datetime.datetime.strptime(docName, "%m.%Y")
-
-                            except:
-                                dateD = datetime.datetime(1970, 1, 1, 0, 0, 0)
-
-                            if dateD > RelevantDate:
-                                # pass
-                                # print(docName) # this is all of the indiv songs that are rel, now need to check folders
-                                for files in os.scandir(
-                                        r'C:\Users\{}\OneDrive\Երգեր\{}\{}'.format(user, file.name, docName)):
-                                    doc2Name = re.sub(".docx", "", files.name)
-                                    doc2Name = re.sub("PORC_PORC", "", doc2Name)
-                                    doc2Name = re.sub("TESTSAVE", "", doc2Name)
-
-                                    dateD = datetime.datetime.strptime(doc2Name, "%m.%d.%y")
-
-                                    if dateD > RelevantDate:
-                                        # print(files.path)
-                                        songBuffer += "\nFilename/Date: " + files.name
-                                        songBuffer += "\nSongs in that file: " + WordSongUpdater.getNums(files.path)
-                                # print(r'C:\Users\{}\OneDrive\Երգեր\{}\{}'.format(user,file.name,folders.name)) # EX: C:\Users\Armne\OneDrive\Երգեր\09.2023\09.28.23.docx
-                                # Now it can be passed to WordSongUpdater.getNums()
-    with open("RecentSongs.txt", 'w', encoding='utf-8') as f:
-        f.write(songBuffer)
-
-
+from SPOT import ERGER_DIRECTORY
 def getAllNums():
     """
     Retrieves all songs from the 'Երգեր' directory and its subdirectories that were created or modified after January 17, 2023.
@@ -172,18 +100,18 @@ def songCollector(sunday_only=False,ignore_sundays=False, three_month_window=Tru
                     if date2.strftime('%A') == "Sunday":  # if date is 3 month fresh and also sunday
                         blocked_dict[fileDate] = {
                             'songList': allSongs[key]['songList'],
-                            'basePth': allSongs[key]['basePth'],
+                            "basePth": allSongs[key]["basePth"],
                         }
                 elif ignore_sundays:
                     if date2.strftime('%A') != "Sunday":  # if date is within search window and also not from sunday
                         blocked_dict[fileDate] = {
                             'songList': allSongs[key]['songList'],
-                            'basePth': allSongs[key]['basePth'],
+                            "basePth": allSongs[key]["basePth"],
                         }
                 else:
                     blocked_dict[fileDate] = {
                         'songList': allSongs[key]['songList'],
-                        'basePth': allSongs[key]['basePth'],
+                        "basePth": allSongs[key]["basePth"],
                     }
     # print(blocked_dict)
     return blocked_dict
@@ -208,7 +136,7 @@ def search_song(data: json, song_num, book, fast_method=False):
             if song[1] == song_num and song[0] == book:
                 found_list.append({
                     'Filename/Date': item,
-                    'basePath': data[item]['basePth'],
+                    'basePath': data[item]["basePth"],
                     'songs': songList
                 })
                 found = True
@@ -294,87 +222,20 @@ def songChecker(book: str, songNum: str, three_month_window = True, ignore_sunda
         # return True, date_newest
     return False
 
-## TODO: Figure out why this is false
-# print(songChecker('Old', '652'))
-
-def toJson():
-    """Generates a json version of AllSongs.txt and save it to the disk
-    underneath the same name, so AllSongs.json
-    """
-    import json
-    with open("AllSongs.txt", 'r', encoding='utf-8') as lines:
-        data = lines.read()
-        data = data.strip().split("\n")
-        result = {}
-        # basePath = ""
-        for line in data:
-            songs = []
-            if 'Folder Path: ' in line:
-                line = re.sub('Folder Path: ', '', line)
-                basePath = line
-            if 'Filename/Date: ' in line:
-                line = re.sub('Filename/Date: ', '', line)
-                filenameDate = line
-            if 'Songs in that file' in line:
-                songs_str = line.split(': ')[1]
-                # songs_list = ast.literal_eval(songs_str)
-                songs_list = eval(songs_str)
-
-                for song in songs_list:
-                    song_elements = list(song)
-
-                    # Check if the list is not empty before accessing the first element
-                    song_id_list = [element for element in song_elements if element is not None and element.isdigit()]
-                    song_type_list = [element for element in song_elements if
-                                      element is not None and not element.isdigit()]
-
-                    if song_id_list:
-                        song_id = song_id_list[0]
-                    else:
-                        song_id = None
-
-                    if song_type_list:
-                        song_type = song_type_list[0]
-                    else:
-                        song_type = None
-
-                    songs.append({"type": song_type, "id": song_id})
-
-                result.update({
-                    filenameDate: {
-                        "songs": songs,
-                        "basePath": basePath,
-                    }})
-    with open('allSongs.json', 'w', encoding='utf-8') as f:
-        json.dump(result, f, indent=4, ensure_ascii=False)
-
-
-def findNewFiles():  # is for finding new files so as to only go through and add those insted of the whole library, which in the near future will be a headache when it gets bigger
-    """This will make a dict. stored and accessed as a json file. It will store the name of the doc, as well as all
+def findPastSongs():  # is for finding new files so as to only go through and add those insted of the whole library, which in the near future will be a headache when it gets bigger
+    """Made to discover past songs, follows strict formatting for folder and filenames
+    This will make a dict. stored and accessed as a json file. It will store the name of the doc, as well as all
     songs it found in the doc, a basepath where the os path for onedrive can be appended, and it will store the last
     modified date, so when searching for files to update it can ignore certain ones whose modified date has not changed.
 
     Returns:
         None: Saves a json file.
     """
-
-    def check_blacklist(text):
-        blacklist = ['Սուրբ ծնունդ', 'Պենտեկոստե', 'Զատիկ', 'Գոհաբանության Օր', 'Wedding', '2020', '2021',
-                     '2022']  # list of unneeded dirs
-        return any(item in text for item in blacklist)
-
-    def fileCrawler(filePth: str):  # is_file or is_folder
-
-        return isfile(filePth)
-
-    # toJson() #run this to update the json index -_-
-    OneDrivePth = os.environ.get("OneDrive")  # gets the base path to onedrive from enviornment variables!
-
-    ErgerFolder = os.scandir(OneDrivePth + "\\Երգեր")
+    #TODO: Decide how you want to point the prg at/to the folder containg past songs
+    from . import ERGER_DIRECTORY
     blacklist = ['Սուրբ ծնունդ', 'Պենտեկոստե', 'Զատիկ', 'Գոհաբանության Օր', 'Wedding', '2020', '2021',
                  '2022', '01.2023']  # list of unneeded dirs
-    blacklist.extend(['02.2023', '03.2023', '04.2023', '05.2023']) # additional dates where the algo was buggy and reported the wrong song nums
-    with os.scandir(OneDrivePth + "\\Երգեր") as ErgerFolders:
+    with os.scandir(ERGER_DIRECTORY) as ErgerFolders:
         filePths = []
         for ergfolder in ErgerFolders:
             if ergfolder.name not in blacklist:
@@ -396,7 +257,7 @@ def findNewFiles():  # is for finding new files so as to only go through and add
                     file_path = ergfolder.name
                     file_path.split('.')[1] #gets the extension
                     if 'lnk' not in file_path: # filters out any .lnk extentsion 
-                        basePth = 'Երգեր\\' + ergfolder.name
+                        basePth = ergfolder.name
                         # print(basePth)
                         filePths.append([
                             ergfolder.path,
@@ -407,7 +268,7 @@ def findNewFiles():  # is for finding new files so as to only go through and add
                     with os.scandir(ergfolder.path) as fullYrFolder:
                         for months in fullYrFolder:
                             if months.name not in blacklist:  # to filter out 01.2023 which is made with MOSO, also
-                                basePth = 'Երգեր\\' + ergfolder.name + "\\" + months.name
+                                basePth = ergfolder.name + "\\" + months.name
                                 # replaces a lot of datetime calls
                                 filePths.append([
                                     months.path,
@@ -419,79 +280,40 @@ def findNewFiles():  # is for finding new files so as to only go through and add
     from WordSongUpdater import getNums
     from datetime import datetime
     from os import stat
-    with open("songs.json", mode='r', encoding='utf-8') as f:
-        allsongs = load(f)
+    with open("past_songs.json", mode='r', encoding='utf-8') as f:
+        past_songs = load(f)
     
     for filepth, basePth in filePths:
         with os.scandir(filepth) as songFolder:
             for song_file in songFolder:
                 if ".docx" in song_file.path:
-                    if allsongs.get(song_file.name, None):
+                    if past_songs.get(song_file.name, None):
                         # lookup file in index, and if none do not run code go to else statement
-                        dateModOnFile = datetime.fromtimestamp(allsongs[song_file.name]['dateMod'])
+                        dateModOnFile = datetime.fromtimestamp(past_songs[song_file.name]['dateMod'])
                         currDateMod = datetime.fromtimestamp(stat(song_file.path).st_mtime)
 
                         # if it exists in the index then do this after setting vars for comparison of dates
                         if not (currDateMod <= dateModOnFile):
                             # if the date modified of a file is greater than the one on file repalce it
-                            allsongs[song_file.name] = {
+                            past_songs[song_file.name] = {
                                 'dateMod': stat(song_file.path).st_mtime,
                                 'path': song_file.path, # Possibly don't need this as I am already saving the base path, therefore this is a derived value.
-                                'basePth': basePth,
+                                "basePth": basePth,
                                 'songList': getNums(song_file.path)
                             }
                             print("Updated this file", song_file.name)
                     else:
-                        allsongs[song_file.name] = {
+                        past_songs[song_file.name] = {
                             'dateMod': stat(song_file.path).st_mtime,
                             'path': song_file.path,
-                            'basePth': basePth,
+                            "basePth": basePth,
                             'songList': getNums(song_file.path)
                         }
 
     # save to json
     with open("songs.json", mode='w', encoding='utf-8') as saveFile:
-        dump(allsongs, saveFile, indent=4, ensure_ascii=False)
-    
-    
-    # Same as above but for songs_cleaned.json which has stricter date reqs
-    with open("songs_cleaned.json", mode='r', encoding='utf-8') as f:
-        allsongs = load(f)
-    # allsongs = {} # uncomment this if you want to start from scratch or use this when making a new json, not based on songs.json
-    for filepth, basePth in filePths:
-        with os.scandir(filepth) as songFolder:
-            for song_file in songFolder:
-                if ".docx" in song_file.path:
-                    if allsongs.get(song_file.name, None):
-                        # lookup file in index, and if none do not run code go to else statement
-                        dateModOnFile = datetime.fromtimestamp(allsongs[song_file.name]['dateMod'])
-                        currDateMod = datetime.fromtimestamp(stat(song_file.path).st_mtime)
-                        # if os.path.isfile(allsongs[songs.name]['path']):
-                        # if it exists in the index then do this after setting vars for comparison of dates
-                        if not (currDateMod <= dateModOnFile):
-                            # if the date modified of a file is greater than the one on file repalce it
-                            allsongs[song_file.name] = {
-                                'dateMod': stat(song_file.path).st_mtime,
-                                'path': song_file.path,
-                                'basePth': basePth,
-                                'songList': getNums(song_file.path)
-                            }
-                            print("Updated this file", song_file.name)
-                        # else:
-                        #     print('Deleted:', song_file.name)
-                        #     allsongs[songs.name] = {}
-                    else:
-                        print(f"Found a new file: {song_file.name}")
-                        allsongs[song_file.name] = {
-                            'dateMod': stat(song_file.path).st_mtime,
-                            'path': song_file.path,
-                            'basePth': basePth,
-                            'songList': getNums(song_file.path) # TODO: Make this a list again, and ensure there are no conflicts with anything using all Songs
-                        }
-                    
-    with open("songs_cleaned.json", mode='w', encoding='utf-8') as saveFile:
-        dump(allsongs, saveFile, indent=4, ensure_ascii=False)
-    
+        dump(past_songs, saveFile, indent=4, ensure_ascii=False)
+
     # print(allsongs)
 
 def clean_up_index():
@@ -542,6 +364,101 @@ def clean_up_index():
 # print(findNewFiles())
 # clean_up_index()
 
+
+def databaseBuilder():  # is for finding new files so as to only go through and add those insted of the whole library, which in the near future will be a headache when it gets bigger
+    """Made to discover and add new songs to the database.
+    This will make a dict. stored and accessed as a json file. It will store the name of the doc, as well as all
+    songs it found in the doc, a basepath where the os path for onedrive can be appended, and it will store the last
+    modified date, so when searching for files to update it can ignore certain ones whose modified date has not changed.
+
+    Returns:
+        None: Saves a json file.
+    """
+
+    blacklist = ['Սուրբ ծնունդ', 'Պենտեկոստե', 'Զատիկ', 'Գոհաբանության Օր', 'Wedding', '2020', '2021',
+                 '2022', '01.2023']  # list of unneeded dirs
+    with os.scandir(ERGER_DIRECTORY) as ErgerFolders:
+        filePths = []
+        for erg in ErgerFolders:
+            if erg.name not in blacklist:
+                erg_name = erg.name
+                filePths.append(
+                    # months.path,
+                    erg.path
+                )
+
+    # begin processing the files
+    from json import load, dump
+    from WordSongUpdater import getNums
+    from datetime import datetime
+    from os import stat
+    # with open("songs_database.json", mode='r', encoding='utf-8') as f:
+    #     allsongs = load(f)
+
+    allsongs = {}
+    
+    for filepth in filePths:
+        song_file_name:str = os.path.basename(filepth)
+        song_num: str = re.findall(r"\d+", song_file_name)[0] # Assumes that the song number is the first set of numbers that appears in the filename
+        # with os.scandir(filepth) as song_file:
+            # for song_file in songFolder:
+        if ".docx" in filepth:
+            if allsongs.get(song_file_name, None):
+                # lookup file in index, and if none do not run code go to else statement
+                dateModOnFile = datetime.fromtimestamp(allsongs[song_file_name]['dateMod'])
+                currDateMod = datetime.fromtimestamp(stat(filepth).st_mtime)
+                
+                # if it exists in the index then do this after setting vars for comparison of dates
+                if not (currDateMod <= dateModOnFile):
+                    # if the date modified of a file is greater than the one on file repalce it
+                    allsongs[song_num] = {
+                        # 'dateMod': stat(filepth).st_mtime,
+                        "Title": song_file_name.split('.')[0], # Eg: Աստված իմ.docx --> Աստված իմ
+                        "v1": filepth,
+                        "latestVersion": filepth,
+                        # "basePth": os.path.basename(filepth),
+                        "key": "",
+                        "speed": "",
+                        "style": "",
+                        "song_type": "",
+                        "timeSig": "",
+                        "Comments": "",
+                        # 'songList': getNums(song_file.path)
+                    }
+                    print("Updated this file", song_file_name)
+            else:
+                allsongs[song_num] = {
+                    # 'dateMod': stat(filepth).st_mtime,
+                    "Title": song_file_name.split('.')[0],
+                    "v1": filepth,
+                    "latestVersion": filepth,
+                    # "basePth": os.path.basename(filepth),
+                    "key": "",
+                    "speed": "",
+                    "style": "",
+                    "song_type": "",
+                    "timeSig": "",
+                    "Comments": "",
+                    # 'songList': getNums(song_file.path)
+                }
+    # Sort the entires by song num
+    def sortEntries():
+        """Sort the entires by song num
+        """
+        # Returns sorted keys
+        sorted_keys = sorted(allsongs.keys(), key=int)
+        # Adding the songs in new sorted order
+        new_dict = {}
+        for key in sorted_keys:
+            new_dict[key] = allsongs[key]
+        return new_dict 
+    allsongs = sortEntries()
+    # save to json
+    with open("database.json", mode='w', encoding='utf-8') as saveFile:
+        dump(allsongs, saveFile, indent=4, ensure_ascii=False)
+
+    # print(allsongs)
+
 def findEmptySongNum(amount_to_generate=1):
    #doesn't need a book, because all holes in songs should be in olds
    with open('wordSongsIndex.json', 'r', encoding='utf-8') as f:
@@ -558,9 +475,10 @@ def findEmptySongNum(amount_to_generate=1):
             else:
                 break
         return found_nums
-   return '1000'
+   return '1001'
 
 
 if __name__ == '__main__':
-    print(findEmptySongNum(amount_to_generate=20))
-    # print(findNewFiles())
+    # print(findEmptySongNum(amount_to_generate=20))
+    print(databaseBuilder())
+    

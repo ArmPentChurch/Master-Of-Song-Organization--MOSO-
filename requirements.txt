@@ -4,3 +4,4 @@ python-dotenv~=0.21.0
 flask~=3.0.0
 pdf2docx==0.5.8
 ttkbootstrap
+scikit-learn==1.6.1

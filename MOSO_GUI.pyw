@@ -1,5 +1,3 @@
-
- # import textToWord
 import docx, os, time, re
 from docx.shared import Pt
 import createfile
@@ -14,8 +12,6 @@ import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 import ttkbootstrap as tbs
 from ttkbootstrap.constants import *
-# from multiprocessing import Process
-# from multiprocessing import Pool
 
 
 class ModernSongManager:
@@ -45,15 +41,15 @@ class ModernSongManager:
         self.entry.pack(side=LEFT, padx=(0, 20))
         
         # Database selection
-        self.radio_var = tk.StringVar()
-        ttk.Radiobutton(top_frame, text="Old", variable=self.radio_var, value="o", style="TRadiobutton").pack(side=LEFT, padx=(0, 10))
-        ttk.Radiobutton(top_frame, text="New", variable=self.radio_var, value="n", style="TRadiobutton").pack(side=LEFT, padx=(0, 20))
+        # self.radio_var = tk.StringVar()
+        # ttk.Radiobutton(top_frame, text="Old", variable=self.radio_var, value="o", style="TRadiobutton").pack(side=LEFT, padx=(0, 10))
+        # ttk.Radiobutton(top_frame, text="New", variable=self.radio_var, value="n", style="TRadiobutton").pack(side=LEFT, padx=(0, 20))
         
         # Release date selection
         self.day_var = tk.StringVar()
-        ttk.Radiobutton(top_frame, text="Tues/Thurs", variable=self.day_var, value="Tuesday", style="TRadiobutton").pack(side=LEFT, padx=(0, 10))
-        ttk.Radiobutton(top_frame, text="None", variable=self.day_var, value=None, style="TRadiobutton").pack(side=LEFT, padx=(0, 10))
-        ttk.Radiobutton(top_frame, text="Sun/Porc", variable=self.day_var, value="Sunday", style="TRadiobutton").pack(side=LEFT)
+        ttk.Radiobutton(top_frame, text="Today", variable=self.day_var, value="Tuesday", style="TRadiobutton").pack(side=LEFT, padx=(0, 10))
+        # ttk.Radiobutton(top_frame, text="None", variable=self.day_var, value=None, style="TRadiobutton").pack(side=LEFT, padx=(0, 10))
+        ttk.Radiobutton(top_frame, text="Porc", variable=self.day_var, value="Sunday", style="TRadiobutton").pack(side=LEFT)
         ttk.Button(top_frame, text="Create File", command=self.create_File, style="primary.TButton").pack(side=LEFT, padx=(10, 0))
         # Buttons frame
         buttons_frame = ttk.Frame(main_frame)
@@ -103,39 +99,31 @@ class ModernSongManager:
 
     def add_song(self,event=None):
         song_num = self.entry_var.get()
-        bookType = self.radio_var.get()
-        if song_num == "" or bookType == "":
-            if song_num == "" and (bookType == 'n' or bookType == 'o'):
+        # bookType = self.radio_var.get()
+        if song_num == "":
+            if song_num == "":
                 messagebox.showerror("Error", "Please enter a song number")
-            elif bookType == "" and song_num != "":
-                messagebox.showerror("Error", "Please choose a database")
-            else:
-                messagebox.showerror("Error", "Please enter a song number and choose a database")
         else:
-            if 'n' in bookType: bookType = 'New'
-            else: bookType = 'Old'
-            if self.day_var != "Sun/Porc":
-                dupSong = SD.songChecker(songNum=song_num,book=bookType,ignore_sundays=True)
-            else:
-                dupSong = SD.songChecker(songNum=song_num,book=bookType)
-            
+            #TODO: Fix it!
+            # if self.day_var != "Sun/Porc":
+            #     dupSong = SD.songChecker(songNum=song_num,book=bookType,ignore_sundays=True)
+            # else:
+            #     dupSong = SD.songChecker(songNum=song_num,book=bookType)
+
+            dupSong = False
             
             if dupSong: # get value and if used then ask if they wish to continue
                 print("That song was used before in the last 3 months")
                 errMes = messagebox.askyesno("Error: That song was used before in the last 3 months",
                                             "Do you wish to proceed with this song {}\nFilename/Date: {}".format(song_num + " " + bookType, dupSong[1])#SD.getSongDate(songNum=song_num,book=bookType))
                                             )
-                if errMes:
-                    if 'New' in bookType: bookType = 'n'
-                    else: bookType = 'o'                
-                    self.listbox.insert(tk.END, f"{song_num} ({bookType})")
+                if errMes:             
+                    self.listbox.insert(tk.END, song_num)
                     self.entry.delete(0, tk.END)
                 else:
                     self.entry.delete(0, tk.END)
             else:
-                if 'New' in bookType: bookType = 'n'
-                else: bookType = 'o'
-                self.listbox.insert(tk.END, f"{song_num} ({bookType})")
+                self.listbox.insert(tk.END, song_num)
                 self.entry.delete(0, tk.END)
 
     def edit_song(self):
@@ -239,7 +227,7 @@ class ModernSongManager:
             songNum.append(re.findall("\S[0-9][0-9]?|[0-9]",i)[0])
         print("Downloading songs...")
         #Now send cmd to make file
-        try:    my_doc = createfile.getPcSongs(songNum, book, user)
+        try:    my_doc = createfile.generateSongFile(songNum, book, user)
         except BaseException as err:
             messagebox.showerror(err,str(err))
         
@@ -275,7 +263,7 @@ class ModernSongManager:
         import scanningDir
         try:
             #Add the end once all is added clean up the indexes
-            scanningDir.findNewFiles()
+            scanningDir.findPastSongs()
             scanningDir.clean_up_index()
         except Exception as e:
             messagebox.showerror("File Open","A word doc is probably open, please close it and then try to create the file.")
@@ -314,7 +302,6 @@ class ModernSongManager:
         import threading as th
 
         def clicked(event=None): #curselection give the index of the thing clicked, in a tuple ie:(10,)
-            MS_WORD = r"C:\Program Files\Microsoft Office\root\Office16\WINWORD.EXE"
             index = PastSongsListbox.curselection()[0]
             selected_item = PastSongsListbox.get(index)
             PastSongsListbox.activate(index)
@@ -324,13 +311,13 @@ class ModernSongManager:
                 for attr in pastSongs:
                     if Path in attr['Filename/Date']:
                         basePth = "C:/Users/{}/OneDrive/".format(os.environ.get("USERNAME"))+attr['basePath']                    
-                wordDocThread = th.Thread(target=openWord,args=[MS_WORD,basePth+"/"+Path])
+                wordDocThread = th.Thread(target=openWord,args=[basePth+"/"+Path])
                 wordDocThread.start()
                 # wordDocThread.run()
                 
-        def openWord(MS_WORD,path):
+        def openWord(path):
             import subprocess
-            subprocess.run([MS_WORD,path])
+            subprocess.run(["start","",path])
             
         if song_num == "" or bookType == "":
             if song_num == "" and (bookType == 'n' or bookType == 'o'):
