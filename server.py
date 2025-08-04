@@ -10,7 +10,7 @@ from random import random
 import re
 import secrets
 from urllib.parse import quote_plus, urlencode
-from authlib.integrations.flask_client import OAuth
+# from authlib.integrations.flask_client import OAuth
 from dotenv import find_dotenv, load_dotenv
 from flask import Flask, jsonify, render_template, request, redirect, url_for, session, flash
 import json
@@ -33,17 +33,17 @@ secret_key = env.get("APP_SECRET_KEY")
 
 app.secret_key = secret_key if secret_key else secrets.token_urlsafe(16)
 
-oauth = OAuth(app)
+# oauth = OAuth(app)
 
-oauth.register(
-    "auth0",
-    client_id=env.get("AUTH0_CLIENT_ID"),
-    client_secret=env.get("AUTH0_CLIENT_SECRET"),
-    client_kwargs={
-        "scope": "openid profile email",
-    },
-    server_metadata_url=f'https://{env.get("AUTH0_DOMAIN")}/.well-known/openid-configuration'
-)
+# oauth.register(
+#     "auth0",
+#     client_id=env.get("AUTH0_CLIENT_ID"),
+#     client_secret=env.get("AUTH0_CLIENT_SECRET"),
+#     client_kwargs={
+#         "scope": "openid profile email",
+#     },
+#     server_metadata_url=f'https://{env.get("AUTH0_DOMAIN")}/.well-known/openid-configuration'
+# )
 
 search_engine = SearchEngine()
 song_lyrics = search_engine.load_json_data('AllLyrics.json')

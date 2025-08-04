@@ -15,7 +15,6 @@ from pprint import pprint
 from random import choice as choose
 from random import choices
 from time import time
-from regex import F
 from scanningDir import songCollector, songChecker,songSearch
 from re import findall
 

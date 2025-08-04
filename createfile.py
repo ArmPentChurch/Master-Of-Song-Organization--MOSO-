@@ -1,4 +1,4 @@
-#This file/module serves as a helper for my newGui.pyw app, otherwise known as MOSO
+#This file/module serves as a helper for my gui app, otherwise known as MOSO
 import os, docx, time, re
 import json
 from docx.shared import Pt,RGBColor
@@ -7,18 +7,6 @@ month = time.strftime('%m')
 year = time.strftime('%y')
 fullYear = time.strftime('%Y')
 day = time.strftime('%d')
-
-
-def process(filePath):
-    text = ""
-    doc = docx.Document(filePath)
-    for p in doc.paragraphs:
-        text += p.text + "\n"
-    return text
-
-def FindNum(song):
-    # print(song)
-    return song['song'][0]['text']
 
 def getDocTextAndIndentation(filePath:str, my_doc):
     """Reads a DOCX file and returns a docx file with the text"""
@@ -61,12 +49,12 @@ def getRandomDoc():
     return docx.Document(posible_rand_docs[random_doc_num])
 
 #parses the data inputed and sends back a python-docx file object
-def getPcSongs(songs, imp, user):
+def getPcSongs(songs, book, user):
     """parses the data inputed and sends back a python-docx file object
 
     Args:
         songs (list): A list containing all of the song numbers requested
-        imp (list): used to denote either 'n'ew or 'o'ld databases
+        book (list): used to denote either 'n'ew or 'o'ld databases
         user (str): a str denoting what pc this is being run on
 
     Raises:
@@ -82,7 +70,7 @@ def getPcSongs(songs, imp, user):
     for x in songs:
         x = str(x)
         y = songs.index(x)
-        if 'n' in imp[y]:
+        if 'n' in book[y]:
             
         
             with open("REDergaran.json", 'r', encoding='utf-8') as f:
@@ -133,13 +121,22 @@ def getPcSongs(songs, imp, user):
     
     return my_doc
 
-def getPosibleSongs(songs, imp):
+def getPosibleSongs(songs:list, book:list):
+    """Verifies/validates the existense of the selected songs.
+
+    Args:
+        songs (list): A list of song nums
+        book (list): A list of matching book names
+
+    Returns:
+        list: Returns either the name of the file or a message informing the user that it could not find the file.
+    """
     posSongList = []
     user = os.environ.get("USERNAME")
     for x in songs:
         x = str(x)
         y = songs.index(x)
-        if 'n' in imp[y]:
+        if 'n' in book[y]:
             
             try:
                 with open("REDergaran.json", 'r', encoding='utf-8') as f:
@@ -163,8 +160,6 @@ def getPosibleSongs(songs, imp):
                 posSongList.append(filePath)
             except:
                 posSongList.append("Could not find old song: {}".format(x))
-        
 
-    
     return posSongList
 

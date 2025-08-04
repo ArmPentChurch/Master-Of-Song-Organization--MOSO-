@@ -2,7 +2,7 @@ import re, time, docx, json
 from os import path as pth, remove, environ
 from docx.shared import Pt
 
-from getAllLyrics import updateSongLyrics
+from utils.getAllLyrics import updateSongLyrics
 
 month = time.strftime('%m')
 year = time.strftime('%y')

@@ -239,10 +239,8 @@ class ModernSongManager:
             songNum.append(re.findall("\S[0-9][0-9]?|[0-9]",i)[0])
         print("Downloading songs...")
         #Now send cmd to make file
-        fail = False
         try:    my_doc = createfile.getPcSongs(songNum, book, user)
         except BaseException as err:
-            fail = True
             messagebox.showerror(err,str(err))
         
         print("Adjusting for readability....")
