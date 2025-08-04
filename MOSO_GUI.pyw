@@ -115,7 +115,7 @@ class ModernSongManager:
             if dupSong: # get value and if used then ask if they wish to continue
                 print("That song was used before in the last 3 months")
                 errMes = messagebox.askyesno("Error: That song was used before in the last 3 months",
-                                            "Do you wish to proceed with this song {}\nFilename/Date: {}".format(song_num + " " + bookType, dupSong[1])#SD.getSongDate(songNum=song_num,book=bookType))
+                                            "Do you wish to proceed with this song {}\nFilename/Date: {}".format(song_num, dupSong[1])#SD.getSongDate(songNum=song_num,book=bookType))
                                             )
                 if errMes:             
                     self.listbox.insert(tk.END, song_num)
