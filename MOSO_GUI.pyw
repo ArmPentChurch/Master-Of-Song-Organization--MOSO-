@@ -44,12 +44,12 @@ class ModernSongManager:
         # self.radio_var = tk.StringVar()
         # ttk.Radiobutton(top_frame, text="Old", variable=self.radio_var, value="o", style="TRadiobutton").pack(side=LEFT, padx=(0, 10))
         # ttk.Radiobutton(top_frame, text="New", variable=self.radio_var, value="n", style="TRadiobutton").pack(side=LEFT, padx=(0, 20))
-        
+        ttk.Label(top_frame, text="Choose a date:", font=("Roboto", 14)).pack(side=LEFT, padx=(0, 10))
         # Release date selection
         self.day_var = tk.StringVar()
-        ttk.Radiobutton(top_frame, text="Today", variable=self.day_var, value="Tuesday", style="TRadiobutton").pack(side=LEFT, padx=(0, 10))
+        ttk.Radiobutton(top_frame, text="Today", variable=self.day_var, value="Today", style="TRadiobutton").pack(side=LEFT, padx=(0, 10))
         # ttk.Radiobutton(top_frame, text="None", variable=self.day_var, value=None, style="TRadiobutton").pack(side=LEFT, padx=(0, 10))
-        ttk.Radiobutton(top_frame, text="Porc", variable=self.day_var, value="Sunday", style="TRadiobutton").pack(side=LEFT)
+        ttk.Radiobutton(top_frame, text="Porc", variable=self.day_var, value="Porc", style="TRadiobutton").pack(side=LEFT)
         ttk.Button(top_frame, text="Create File", command=self.create_File, style="primary.TButton").pack(side=LEFT, padx=(10, 0))
         # Buttons frame
         buttons_frame = ttk.Frame(main_frame)
@@ -188,17 +188,10 @@ class ModernSongManager:
         except Exception as e:
             messagebox.showerror("File Open","A word doc is probably open, please close it and then try to create the file.")
             messagebox.showerror("Error Message", e)
+
     def viewPosSongs(self):
         songsList = self.listbox.get(0, tk.END)
-            #Sort out the old and new, and all numbers
-        book = []
-        for x in songsList:
-            book.append(re.findall("(o|n)", x)[0])
-        songNum = []
-        for i in songsList:
-            songNum.append(re.findall("\S[0-9][0-9]?|[0-9]",i)[0])
-
-        posibleSongsList = createfile.getPosibleSongs(songNum, book)
+        posibleSongsList = createfile.getPosibleSongs(songsList)
         viewWin = tk.Tk()
         # viewWin.geometry("280x435")
         viewWin.geometry("480x200")
@@ -214,20 +207,10 @@ class ModernSongManager:
 
     def create_File(self):
         print("Firing up databases...")
-        ##Used to determine which file path to save to
-        user = os.environ.get("USERNAME")
         songsList = self.listbox.get(0, tk.END)
-
-        #Sort out the old and new, and all numbers
-        book = []
-        for x in songsList:
-            book.append(re.findall("(o|n)", x)[0])
-        songNum = []
-        for i in songsList:
-            songNum.append(re.findall("\S[0-9][0-9]?|[0-9]",i)[0])
         print("Downloading songs...")
         #Now send cmd to make file
-        try:    my_doc = createfile.generateSongFile(songNum, book, user)
+        try:    my_doc = createfile.generateSongFile(songsList)
         except BaseException as err:
             messagebox.showerror(err,str(err))
         
@@ -244,22 +227,30 @@ class ModernSongManager:
         day = time.strftime('%d')
 
         #checks if path exists if not makes one
-        if os.path.exists("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear):
-            if self.day_var.get() == "Sunday":
-                my_doc.save("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear + "/" + month + "." + day + "." + year + "PORC_PORC.docx")
-                # quit(root.mainloop())
-            elif self.day_var.get() == "Tuesday":
-                my_doc.save("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear + "/" + month + "." + day + "." + year + ".docx")
-            else:
-                my_doc.save("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear + "/" + month + "." + day + "." + year + "TESTSAVE.docx")
+        # TODO: Ask them if they want a system like ours for file sorting
+        # Or if they just want the file to be output somewhere?
+        # if os.path.exists("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear):
+        #     if self.day_var.get() == "Sunday":
+        #         my_doc.save("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear + "/" + month + "." + day + "." + year + "PORC_PORC.docx")
+        #         # quit(root.mainloop())
+        #     elif self.day_var.get() == "Tuesday":
+        #         my_doc.save("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear + "/" + month + "." + day + "." + year + ".docx")
+        #     else:
+        #         my_doc.save("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear + "/" + month + "." + day + "." + year + "TESTSAVE.docx")
+        # else:
+        #     os.mkdir("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear)
+        #     if self.day_var.get() == "Sunday":
+        #         my_doc.save("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear + "/" + month + "." + day + "." + year + "PORC_PORC.docx")
+        #     if self.day_var.get() == "Tuesday":
+        #         my_doc.save("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear + "/" + month + "." + day + "." + year + ".docx")
+        #     else:
+        #         my_doc.save("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear + "/" + month + "." + day + "." + year + "TESTSAVE.docx")
+        if self.day_var.get() == "Porc":
+            my_doc.save( "output/PORC_" + month + "." + day + "." + year + "_PORC.docx")
+            # quit(root.mainloop())
+        # elif self.day_var.get() == "Today":
         else:
-            os.mkdir("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear)
-            if self.day_var.get() == "Sunday":
-                my_doc.save("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear + "/" + month + "." + day + "." + year + "PORC_PORC.docx")
-            if self.day_var.get() == "Tuesday":
-                my_doc.save("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear + "/" + month + "." + day + "." + year + ".docx")
-            else:
-                my_doc.save("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear + "/" + month + "." + day + "." + year + "TESTSAVE.docx")
+            my_doc.save("output/"+month + "." + day + "." + year + ".docx")
         import scanningDir
         try:
             #Add the end once all is added clean up the indexes

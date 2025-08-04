@@ -232,7 +232,7 @@ def findPastSongs():  # is for finding new files so as to only go through and ad
         None: Saves a json file.
     """
     #TODO: Decide how you want to point the prg at/to the folder containg past songs
-    from . import ERGER_DIRECTORY
+    
     blacklist = ['Սուրբ ծնունդ', 'Պենտեկոստե', 'Զատիկ', 'Գոհաբանության Օր', 'Wedding', '2020', '2021',
                  '2022', '01.2023']  # list of unneeded dirs
     with os.scandir(ERGER_DIRECTORY) as ErgerFolders:
