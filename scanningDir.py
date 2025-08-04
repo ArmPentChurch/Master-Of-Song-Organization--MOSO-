@@ -3,60 +3,6 @@ import json
 from pprint import pprint
 import os, datetime, re
 from SPOT import ERGER_DIRECTORY
-def getAllNums():
-    """
-    Retrieves all songs from the 'Երգեր' directory and its subdirectories that were created or modified after January 17, 2023.
-    The songs are stored in a text file named 'AllSongs.txt' in the current working directory.
-    
-    Parameters:
-    None
-    
-    Returns:
-    None
-    """
-    from WordSongUpdater import getNums
-    f = open("AllSongs.txt", 'w', encoding='utf-8')
-    bufferList = []
-    startDate = datetime.datetime(year=2023, month=1, day=17)
-    with os.scandir(r'C:\Users\{}\OneDrive\Երգեր'.format(os.environ.get("USERNAME"))) as folders:
-        for entry in folders:
-            if re.match(r'\d', entry.name):  # if file/folder contains a number
-                # print(entry.path)
-                if "." in entry.name and datetime.datetime.strptime(entry.name,
-                                                                    '%m.%Y') >= startDate:  # this means it is something like mm.YY
-                    # print(entry.name)
-                    # print("\nFilename/Date: {}".format(entry.name))
-                    bufferList.append("\nFolder Path: {}".format(
-                        "Երգեր/" + entry.name))  # in theory could just make it only folder name
-                    # f.write("\nFilename/Date: {}".format(entry.name))
-                    for condesedFolders in os.scandir(entry.path):  # gets all the docx files
-                        # print("\nSongs in that file: "+ getNums(condesedFolders.path))
-                        bufferList.append("\nFilename/Date: {}".format(condesedFolders.name))
-                        bufferList.append("\nSongs in that file: " + getNums(condesedFolders.path))
-                        # f.write("\nSongs in that file: "+ getNums(condesedFolders.path))
-                else:
-                    if not "." in entry.name and (
-                            datetime.datetime.strptime(entry.name, '%Y') >= datetime.datetime.strptime('2023', '%Y')):
-                        for condesedFileFolders in os.scandir(entry.path):
-                            # print(condesedFileFolders)
-                            if "." in condesedFileFolders.name and (datetime.datetime.strptime(condesedFileFolders.name,
-                                                                                               '%m.%Y') > startDate):  # this means it is something like mm.YY
-                                # print(entry.name)
-                                # print("\nFilename/Date: {}".format(entry.name))
-                                f.write(
-                                    "\nFolder Path: {}".format("Երգեր/" + entry.name + "/" + condesedFileFolders.name))
-                                for condesedFoldersDocx in os.scandir(
-                                        condesedFileFolders.path):  # gets all the docx files
-                                    # print("\nSongs in that file: "+ getNums(condesedFoldersDocx.path))
-                                    # if ".docx" in condesedFoldersDocx.name:
-                                    f.write("\nFilename/Date: {}".format(condesedFoldersDocx.name))
-                                    f.write("\nSongs in that file: " + getNums(condesedFoldersDocx.path))
-    for filePth in bufferList:
-        f.write(filePth)
-    f.close()
-
-
-# getAllNums() #If left uncommented can cause errors during use of MOSO
 
 # gets songs fron recentsongs and sorts by last three months
 def songCollector(sunday_only=False,ignore_sundays=False, three_month_window=True, search_range=90):
