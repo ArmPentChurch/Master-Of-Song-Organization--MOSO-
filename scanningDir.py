@@ -362,7 +362,7 @@ def databaseBuilder():  # is for finding new files so as to only go through and 
                         "Title": song_file_name.split('.')[0], # Eg: Աստված իմ.docx --> Աստված իմ
                         "v1": filepth,
                         "latestVersion": filepth,
-                        # "basePth": os.path.basename(filepth),
+                        "current_version": "1",
                         "key": "",
                         "speed": "",
                         "style": "",
@@ -378,7 +378,7 @@ def databaseBuilder():  # is for finding new files so as to only go through and 
                     "Title": song_file_name.split('.')[0],
                     "v1": filepth,
                     "latestVersion": filepth,
-                    # "basePth": os.path.basename(filepth),
+                    "current_version": "1", # Easier when recalling info, that everything is a str cmp to having to do logic to parse if string or not
                     "key": "",
                     "speed": "",
                     "style": "",
