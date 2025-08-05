@@ -2,8 +2,6 @@ from time import time as today
 from json import load
 from os import environ as ENV
 from docx import Document
-from regex import D
-basePth = ENV.get("OneDrive")
 #open all files, get latest version and store lyrics in dict
 # if songLyrics.get('latestChange',None) or do < today()
 
