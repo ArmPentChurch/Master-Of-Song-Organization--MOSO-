@@ -46,9 +46,9 @@ def getRandomDoc():
     """Gets a random song template"""
     from random import randint
     from glob import glob
-    posible_rand_docs = glob("song_templates\\*.docx")
-    random_doc_num = randint(0, len(posible_rand_docs)-1)
-    return docx.Document(posible_rand_docs[random_doc_num])
+    posible_rand_docs = glob("song_templates//*.docx")
+    random_doc_num = randint(0, len(posible_rand_docs))
+    return docx.Document(posible_rand_docs[random_doc_num-1])
 
 #parses the data inputed and sends back a python-docx file object
 def generateSongFile(songnums:list[str]) -> Document:
