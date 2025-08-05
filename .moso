@@ -1,6 +1,7 @@
 {
     "song_templates": "song_templates/",
     "database": "database.json",
-    "erger_directory": "/Users/movsesmovsesyan/Library/CloudStorage/OneDrive-Personal/Երգարան Word Files",
-    "past_songs": "/past_songs.json"
+    "erger_directory": "/Users/movsesmovsesyan/Library/CloudStorage/OneDrive-Personal/RED Words",
+    "past_songs": "past_songs.json",
+    "output_folder": "/Users/movsesmovsesyan/New Folder"
 }

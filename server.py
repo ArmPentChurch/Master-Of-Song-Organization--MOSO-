@@ -27,6 +27,8 @@ ENV_FILE = find_dotenv("{}\Documents\Code\.env".format(env.get("OneDrive")))
 if ENV_FILE:
     load_dotenv(ENV_FILE)
 
+from SPOT import PAST_SONGS_FILEPATH
+
 app = Flask(__name__)
 
 secret_key = env.get("APP_SECRET_KEY")
@@ -51,7 +53,7 @@ song_lyrics = search_engine.load_json_data('AllLyrics.json')
 onedrive_path = env.get("OneDrive") if os.name != "posix" else "/Users/movsesmovsesyan/Library/CloudStorage/OneDrive-Personal"
 
 def open_past_songs():
-    with open("songs_cleaned.json" , 'r', encoding='utf-8') as f:
+    with open(PAST_SONGS_FILEPATH , 'r', encoding='utf-8') as f:
         all_past_songs:dict = json.load(f)
     return all_past_songs
 
@@ -487,7 +489,7 @@ def today_songs():
         # print(songPth)
         with ThreadPoolExecutor() as futures:
             future = futures.submit(saveHtml, songPth, WordDoc)
-            # save = futures.submit(save_json, all_past_songs, "songs_cleaned.json")
+            # save = futures.submit(save_json, all_past_songs, PAST_SONGS_FILEPATH)
             result = future.result()
             # result2 = save.result()
         with open(f"htmlsongs\\{WordDoc}.txt", 'r', encoding='utf-8') as f:
@@ -504,7 +506,7 @@ def event(filename = r"Երգեր/Պենտեկոստե/2025/Պենտեկոստե
     if request.method == 'GET':
         # with ThreadPoolExecutor() as futures:
         #     future = futures.submit(saveHtml, filename, "Պենտեկոստե.docx") 
-        #     # save = futures.submit(save_json, all_past_songs, "songs_cleaned.json")
+        #     # save = futures.submit(save_json, all_past_songs, PAST_SONGS_FILEPATH)
         #     result = future.result()
         #     # result2 = save.result()
         # with open(f"htmlsongs/Պենտեկոստե.docx.txt", 'r', encoding='utf-8') as f:
@@ -536,7 +538,7 @@ def event(filename = r"Երգեր/Պենտեկոստե/2025/Պենտեկոստե
             
             with ThreadPoolExecutor() as futures:
                 future = futures.submit(saveHtml, selected_file, basename) 
-                save = futures.submit(save_json, all_past_songs, "songs_cleaned.json")
+                save = futures.submit(save_json, all_past_songs, PAST_SONGS_FILEPATH)
                 result = future.result()
                 result2 = save.result()
             with open(f"htmlsongs\\{basename}.txt", 'r', encoding='utf-8') as f:
@@ -583,7 +585,7 @@ def youth():
             
             with ThreadPoolExecutor() as futures:
                 future = futures.submit(saveHtml, selected_file, basename) 
-                save = futures.submit(save_json, all_past_songs, "songs_cleaned.json")
+                save = futures.submit(save_json, all_past_songs, PAST_SONGS_FILEPATH)
                 result = future.result()
                 result2 = save.result()
             with open(f"htmlsongs\\{basename}.txt", 'r', encoding='utf-8') as f:

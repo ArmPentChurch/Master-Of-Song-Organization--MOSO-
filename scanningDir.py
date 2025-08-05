@@ -1,4 +1,3 @@
-from genericpath import isfile
 import json
 from pprint import pprint
 import os, datetime, re
@@ -13,7 +12,8 @@ def songCollector(sunday_only=False, ignore_sundays=False, three_month_window=Tr
     # sunday_only (bool, optional): If you wish to search only Sunday songs. Defaults to False.
         ignore_sundays (bool, optional): If you wish to ignore Sunday songs. Defaults to False.
         three_month_window (bool, optional): If you want a 3 month search window. Defaults to True.
-        search_range (int, optional): If you want to search within a specific range of dates. Must have three_month_window set to False. Search_range defaults to the three month window.\n
+        search_range (int, optional): If you want to search within a specific range of dates.
+        Must have three_month_window set to False. Search_range defaults to the three month window.\n
 
     #### Returns:
         blocked_list: a list containing two sub lists one of songs one for the matching book and another for the filename/date
@@ -30,9 +30,10 @@ def songCollector(sunday_only=False, ignore_sundays=False, three_month_window=Tr
 
 
     blocked_dict = {}
-    for key in past_songs:
-        if 'TESTSAVE' not in key:
-            date = key
+    past_song:str
+    for past_song in past_songs:
+        if 'TESTSAVE' not in past_song:
+            date = past_song.replace('PORC', '').replace('_', '')
             date = re.findall(r"(.*\d)", date)[0]
             fileDate = date  # saving this for later to be used in list
             # Define the date format
@@ -44,25 +45,25 @@ def songCollector(sunday_only=False, ignore_sundays=False, three_month_window=Tr
                 if sunday_only:
                     if date2.strftime('%A') == "Sunday":  # if date is 3 month fresh and also sunday
                         blocked_dict[fileDate] = {
-                            'songList': past_songs[key]['songList'],
-                            "basePth": past_songs[key]["basePth"],
+                            'songList': past_songs[past_song]['songList'],
+                            "basePth": past_songs[past_song]["basePth"],
                         }
                 elif ignore_sundays:
                     if date2.strftime('%A') != "Sunday":  # if date is within search window and also not from sunday
                         blocked_dict[fileDate] = {
-                            'songList': past_songs[key]['songList'],
-                            "basePth": past_songs[key]["basePth"],
+                            'songList': past_songs[past_song]['songList'],
+                            "basePth": past_songs[past_song]["basePth"],
                         }
                 else:
                     blocked_dict[fileDate] = {
-                        'songList': past_songs[key]['songList'],
-                        "basePth": past_songs[key]["basePth"],
+                        'songList': past_songs[past_song]['songList'],
+                        "basePth": past_songs[past_song]["basePth"],
                     }
     return blocked_dict
 
-def past_song_search(data: json, song_num, fast_method=False):
+def past_song_search(data:dict, song_num, fast_method=False):
     """
-    Searches for a song in the past songs data based on the song number and book.
+    Search for the occurences of a song inside of a collection of songs otherwise known as a day.
 
     Parameters:
         data (json): The data to search for the song.
@@ -70,29 +71,26 @@ def past_song_search(data: json, song_num, fast_method=False):
         book (str): The book to search for the song in.
 
     Returns:
-        found_list (list): A list of dictionaries containing the filename/date, basePath, and songList if the song is found, or None if the song is not found.
+        found_dates (list): A list of dictionaries containing the filename/date, basePath, and songList if the song is found, or None if the song is not found.
     """
-    found_list = []
-    found = False
-    for item in data:
-        songList = eval(data[item]['songList'])
-        for song in songList:
-            if song[1] == song_num:
-                found_list.append({
-                    'Filename/Date': item,
-                    'basePath': data[item]["basePth"],
-                    'songs': songList
-                })
-                found = True
-                if fast_method: return True
-    if found:
-        return found_list
-    if fast_method:
-        return False
-    return None
+    if not isinstance(data, dict):
+        with open(PAST_SONGS_FILEPATH, 'r', encoding='utf-8') as past_songs:
+            data = json.load(past_songs)
+    found_dates = []
+    metadata:dict
+    filename:str
+    for filename, metadata in data.items():
+        songList = metadata.get("songList", False)
+        if songList:
+            for songNum in songList:
+                if song_num == songNum:
+                    found_dates.append(filename)
+                    break
+    return found_dates
 
 def songSearch(song_num:str, book:str):
     """
+    Basically a wrapper around past_song_search
     A function that searches for a song based on the song number and book provided.
 
     Parameters:
@@ -106,33 +104,20 @@ def songSearch(song_num:str, book:str):
     with open(PAST_SONGS_FILEPATH, 'r', encoding='utf-8') as f:
         data = json.load(f)
 
-    if (book == "REDergaran") or (book == "New"):
-        book = 'New'
-    if (book == "Old") or (book == "wordSongsIndex"):
-        book = 'Old'
-
     # Define the search function
-    result = past_song_search(data, song_num, book)
+    result = past_song_search(data, song_num)
 
     if result:
-        # print(f"Found song number {song_num} in book {book} in the file for {result['filename_date']}.")
-
-        # for x in result:
-        #     print(x)
-
         return result
     else:
-        # print(f"Song number {song_num} in book {book} not found.")
         return None
-
-# print(songSearch("253","New"))
 
 def songChecker(book: str, songNum: str, three_month_window = True, ignore_sundays = False):
     """
     Checks if a song with the given song number in the specified book, has been sang in the last 3 months.
 
     Args:
-        book (str): The book to search for the song in.
+        book (str): DEPRICATED DOES NOTHING
         songNum (str): The number of the song to search for.
 
     Returns:
@@ -142,14 +127,12 @@ def songChecker(book: str, songNum: str, three_month_window = True, ignore_sunda
     """
 
     if three_month_window and not ignore_sundays:
-        blocked_list = songCollector(sunday_only=True)
+        blocked_list = songCollector()
     elif not three_month_window:
         blocked_list = songCollector(sunday_only=False, ignore_sundays=True, three_month_window=False, search_range=960) # This is for an overall search for latest date on a song
     if ignore_sundays:
         blocked_list = songCollector(sunday_only=False, ignore_sundays=True)
-    
-    # else:
-    #     blocked_list = songCollector(sunday_only=False, ignore_sundays=True, three_month_window=False, search_range=960)
+
     date_format = "%m.%d.%y"
     # print(blocked_list)
     song_search_results = past_song_search(data=blocked_list, song_num=songNum)
@@ -157,8 +140,8 @@ def songChecker(book: str, songNum: str, three_month_window = True, ignore_sunda
     if song_search_results:
         # print(song_search_results)
         for key in song_search_results:
-            # print(key['Filename/Date'])
-            date_compare = datetime.datetime.strptime(key['Filename/Date'], date_format)
+            # print(key)
+            date_compare = datetime.datetime.strptime(key, date_format)
             if date_newest < date_compare:
                 date_newest = date_compare
         return True, date_newest.strftime(date_format)
@@ -173,7 +156,7 @@ def findPastSongs():  # is for finding new files so as to only go through and ad
 
     Returns:
         None: Saves a json file.
-    """    
+    """
     blacklist = []  # list of unneeded dirs
     with os.scandir(OUTPUT_FOLDER) as ErgerFolders:
         filePths = []
@@ -227,7 +210,7 @@ def findPastSongs():  # is for finding new files so as to only go through and ad
     from os import stat
     with open(PAST_SONGS_FILEPATH, mode='r', encoding='utf-8') as f:
         past_songs = load(f)
-    
+
     for filepth, basePth in filePths:
         with os.scandir(filepth) as songFolder:
             for song_file in songFolder:
@@ -244,7 +227,7 @@ def findPastSongs():  # is for finding new files so as to only go through and ad
                                 'dateMod': stat(song_file.path).st_mtime,
                                 'path': song_file.path, # Possibly don't need this as I am already saving the base path, therefore this is a derived value.
                                 "basePth": basePth,
-                                'songList': getNums(song_file.path)
+                                'songList': getNums(song_file.path, return_list=True)
                             }
                             print("Updated this file", song_file.name)
                     else:
@@ -252,7 +235,7 @@ def findPastSongs():  # is for finding new files so as to only go through and ad
                             'dateMod': stat(song_file.path).st_mtime,
                             'path': song_file.path,
                             "basePth": basePth,
-                            'songList': getNums(song_file.path)
+                            'songList': getNums(song_file.path, return_list=True)
                         }
 
     # save to json
@@ -271,8 +254,8 @@ def clean_up_index():
     the function removes them from the dictionary and writes the updated dictionary back to the PAST_SONGS_FILEPATH.
 
     """
-    with open(PAST_SONGS_FILEPATH, 'r', encoding='utf-8') as past_songs:
-        past_songs: dict = json.load(past_songs)
+    with open(PAST_SONGS_FILEPATH, 'r', encoding='utf-8') as f:
+        past_songs: dict = json.load(f)
         # find all songs that no longer exist
         items_to_delete = []
         for SongFile in past_songs:
@@ -285,7 +268,7 @@ def clean_up_index():
         # delete items
         for item in items_to_delete:
             del past_songs[item]
-        
+
         with open(PAST_SONGS_FILEPATH, 'w', encoding='utf-8') as f:
             json.dump(past_songs, f, indent=4, ensure_ascii=False)
 
@@ -320,7 +303,7 @@ def databaseBuilder():  # is for finding new files so as to only go through and 
     #     allsongs = load(f)
 
     allsongs = {}
-    
+
     for filepth in filePths:
         song_file_name:str = os.path.basename(filepth)
         song_num: str = re.findall(r"\d+", song_file_name)[0] # Assumes that the song number is the first set of numbers that appears in the filename
@@ -331,7 +314,7 @@ def databaseBuilder():  # is for finding new files so as to only go through and 
                 # lookup file in index, and if none do not run code go to else statement
                 dateModOnFile = datetime.fromtimestamp(allsongs[song_file_name]['dateMod'])
                 currDateMod = datetime.fromtimestamp(stat(filepth).st_mtime)
-                
+
                 # if it exists in the index then do this after setting vars for comparison of dates
                 if not (currDateMod <= dateModOnFile):
                     # if the date modified of a file is greater than the one on file repalce it
@@ -375,14 +358,14 @@ def databaseBuilder():  # is for finding new files so as to only go through and 
         new_dict = {}
         for key in sorted_keys:
             new_dict[key] = allsongs[key]
-        return new_dict 
+        return new_dict
     allsongs = sortEntries()
     # save to json
     with open("database.json", mode='w', encoding='utf-8') as saveFile:
         dump(allsongs, saveFile, indent=4, ensure_ascii=False)
 
     # print(allsongs)
-
+@DeprecationWarning
 def findEmptySongNum(amount_to_generate=1):
    #doesn't need a book, because all holes in songs should be in olds
    with open('wordSongsIndex.json', 'r', encoding='utf-8') as f:
@@ -409,5 +392,6 @@ if __name__ == '__main__':
     # print(findEmptySongNum(amount_to_generate=20))
     # print(databaseBuilder())
     # findPastSongs()
+    # past_song_search("","123")
     # clean_up_index()
     ...
