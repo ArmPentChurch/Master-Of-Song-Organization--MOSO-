@@ -2,10 +2,10 @@ from genericpath import isfile
 import json
 from pprint import pprint
 import os, datetime, re
-from SPOT import ERGER_DIRECTORY
+from SPOT import ERGER_DIRECTORY, OUTPUT_FOLDER, PAST_SONGS_FILEPATH
 
 # gets songs fron recentsongs and sorts by last three months
-def songCollector(sunday_only=False,ignore_sundays=False, three_month_window=True, search_range=90):
+def songCollector(sunday_only=False, ignore_sundays=False, three_month_window=True, search_range=90):
     """Generates a list of all the songs sang. Defaults to the last three months both with var and search range.
         When there is two files both with the same name, the date reader misreads
 
@@ -25,14 +25,13 @@ def songCollector(sunday_only=False,ignore_sundays=False, three_month_window=Tru
     if three_month_window: search_window = (current_date + datetime.timedelta(days=-90)).strftime('%m.%d.%y') #should really be if range == 90, or just not exist
     else : search_window = (current_date + datetime.timedelta(days=-search_range)).strftime('%m.%d.%y')
 
-    with open('songs_cleaned.json', 'r', encoding='utf-8') as f:
-        allSongs = load(f)
+    with open(PAST_SONGS_FILEPATH, 'r', encoding='utf-8') as f:
+        past_songs = load(f)
 
 
     blocked_dict = {}
-    for key in allSongs:
-        if 'TESTSAVE' not in key: # if doc file has this name, an actual valid file will probably be overwriten
-                                  # and therefore causing it to not be seen by my algo
+    for key in past_songs:
+        if 'TESTSAVE' not in key:
             date = key
             date = re.findall(r"(.*\d)", date)[0]
             fileDate = date  # saving this for later to be used in list
@@ -45,26 +44,25 @@ def songCollector(sunday_only=False,ignore_sundays=False, three_month_window=Tru
                 if sunday_only:
                     if date2.strftime('%A') == "Sunday":  # if date is 3 month fresh and also sunday
                         blocked_dict[fileDate] = {
-                            'songList': allSongs[key]['songList'],
-                            "basePth": allSongs[key]["basePth"],
+                            'songList': past_songs[key]['songList'],
+                            "basePth": past_songs[key]["basePth"],
                         }
                 elif ignore_sundays:
                     if date2.strftime('%A') != "Sunday":  # if date is within search window and also not from sunday
                         blocked_dict[fileDate] = {
-                            'songList': allSongs[key]['songList'],
-                            "basePth": allSongs[key]["basePth"],
+                            'songList': past_songs[key]['songList'],
+                            "basePth": past_songs[key]["basePth"],
                         }
                 else:
                     blocked_dict[fileDate] = {
-                        'songList': allSongs[key]['songList'],
-                        "basePth": allSongs[key]["basePth"],
+                        'songList': past_songs[key]['songList'],
+                        "basePth": past_songs[key]["basePth"],
                     }
-    # print(blocked_dict)
     return blocked_dict
 
-def search_song(data: json, song_num, book, fast_method=False):
+def past_song_search(data: json, song_num, fast_method=False):
     """
-    Searches for a song in the given data based on the song number and book.
+    Searches for a song in the past songs data based on the song number and book.
 
     Parameters:
         data (json): The data to search for the song.
@@ -79,7 +77,7 @@ def search_song(data: json, song_num, book, fast_method=False):
     for item in data:
         songList = eval(data[item]['songList'])
         for song in songList:
-            if song[1] == song_num and song[0] == book:
+            if song[1] == song_num:
                 found_list.append({
                     'Filename/Date': item,
                     'basePath': data[item]["basePth"],
@@ -87,8 +85,7 @@ def search_song(data: json, song_num, book, fast_method=False):
                 })
                 found = True
                 if fast_method: return True
-                # return item
-    if found: # will never be ran if fast_method = True
+    if found:
         return found_list
     if fast_method:
         return False
@@ -106,7 +103,7 @@ def songSearch(song_num:str, book:str):
         dict: A dictionary containing information about the found song if it exists, None otherwise.
     """
     import json
-    with open('songs_cleaned.json', 'r', encoding='utf-8') as f:
+    with open(PAST_SONGS_FILEPATH, 'r', encoding='utf-8') as f:
         data = json.load(f)
 
     if (book == "REDergaran") or (book == "New"):
@@ -115,7 +112,7 @@ def songSearch(song_num:str, book:str):
         book = 'Old'
 
     # Define the search function
-    result = search_song(data, song_num, book)
+    result = past_song_search(data, song_num, book)
 
     if result:
         # print(f"Found song number {song_num} in book {book} in the file for {result['filename_date']}.")
@@ -155,7 +152,7 @@ def songChecker(book: str, songNum: str, three_month_window = True, ignore_sunda
     #     blocked_list = songCollector(sunday_only=False, ignore_sundays=True, three_month_window=False, search_range=960)
     date_format = "%m.%d.%y"
     # print(blocked_list)
-    song_search_results = search_song(blocked_list, songNum, book)
+    song_search_results = past_song_search(data=blocked_list, song_num=songNum)
     date_newest = datetime.datetime.strptime("01.01.70", date_format)
     if song_search_results:
         # print(song_search_results)
@@ -176,12 +173,9 @@ def findPastSongs():  # is for finding new files so as to only go through and ad
 
     Returns:
         None: Saves a json file.
-    """
-    #TODO: Decide how you want to point the prg at/to the folder containg past songs
-    
-    blacklist = ['Սուրբ ծնունդ', 'Պենտեկոստե', 'Զատիկ', 'Գոհաբանության Օր', 'Wedding', '2020', '2021',
-                 '2022', '01.2023']  # list of unneeded dirs
-    with os.scandir(ERGER_DIRECTORY) as ErgerFolders:
+    """    
+    blacklist = []  # list of unneeded dirs
+    with os.scandir(OUTPUT_FOLDER) as ErgerFolders:
         filePths = []
         for ergfolder in ErgerFolders:
             if ergfolder.name not in blacklist:
@@ -200,33 +194,38 @@ def findPastSongs():  # is for finding new files so as to only go through and ad
                     # 02.2024
                     # 03.2024
                     # 04.2024
-                    file_path = ergfolder.name
-                    file_path.split('.')[1] #gets the extension
-                    if 'lnk' not in file_path: # filters out any .lnk extentsion 
+                    month_folder = ergfolder.path
+                    if os.path.isdir(month_folder): # Make sure its a folder
                         basePth = ergfolder.name
                         # print(basePth)
                         filePths.append([
-                            ergfolder.path,
+                            month_folder,
                             basePth
                         ])  # add to a stack(array) for processing later via filePths.pop
 
                 else:
-                    with os.scandir(ergfolder.path) as fullYrFolder:
-                        for months in fullYrFolder:
-                            if months.name not in blacklist:  # to filter out 01.2023 which is made with MOSO, also
-                                basePth = ergfolder.name + "\\" + months.name
-                                # replaces a lot of datetime calls
-                                filePths.append([
-                                    months.path,
-                                    basePth
-                                ])
+                    # Means its a full year
+                    # When the year is done, MOSO automatically moves all the month folders
+                    # into a year folder. ex: 2024
+                    # This is checking that:
+                    if os.path.isdir(ergfolder.path):
+                        with os.scandir(ergfolder.path) as fullYrFolder:
+                            for months in fullYrFolder:
+                                if os.path.isdir(months.path):
+                                    if months.name not in blacklist:  # to filter out 01.2023
+                                        basePth = ergfolder.name + "/" + months.name
+                                        # replaces a lot of datetime calls
+                                        filePths.append([
+                                            months.path,
+                                            basePth
+                                        ])
 
     # begin processing the files
     from json import load, dump
     from WordSongUpdater import getNums
     from datetime import datetime
     from os import stat
-    with open("past_songs.json", mode='r', encoding='utf-8') as f:
+    with open(PAST_SONGS_FILEPATH, mode='r', encoding='utf-8') as f:
         past_songs = load(f)
     
     for filepth, basePth in filePths:
@@ -257,59 +256,38 @@ def findPastSongs():  # is for finding new files so as to only go through and ad
                         }
 
     # save to json
-    with open("songs.json", mode='w', encoding='utf-8') as saveFile:
+    with open(PAST_SONGS_FILEPATH, mode='w', encoding='utf-8') as saveFile:
         dump(past_songs, saveFile, indent=4, ensure_ascii=False)
 
-    # print(allsongs)
+    # print(past_songs)
 
 def clean_up_index():
     """
     Cleans up the index by removing songs that no longer exist in the file system.\n
 
-    This function reads the 'songs_cleaned.json' file, which contains a dictionary of song metadata. It iterates over each song in the dictionary and checks if the corresponding file exists in the file system. If a song file is not found, it is marked for deletion. After identifying all the songs to be deleted, the function removes them from the dictionary and writes the updated dictionary back to the 'songs_cleaned.json' file.
+    This function reads the file at PAST_SONGS_FILEAPTH ('past_songs.json'), which contains a dictionary of song metadata.
+    It iterates over each song in the dictionary and checks if the corresponding file exists in the file system.
+    If a song file is not found, it is marked for deletion. After identifying all the songs to be deleted,
+    the function removes them from the dictionary and writes the updated dictionary back to the PAST_SONGS_FILEPATH.
 
     """
-    OneDrive_pth = os.environ.get("OneDrive")
-    with open("songs_cleaned.json", 'r', encoding='utf-8') as allSongs:
-        allSongs: dict = json.load(allSongs)
+    with open(PAST_SONGS_FILEPATH, 'r', encoding='utf-8') as past_songs:
+        past_songs: dict = json.load(past_songs)
         # find all songs that no longer exist
         items_to_delete = []
-        for SongDates in allSongs:
-            file_pth = OneDrive_pth + "\\" + allSongs[SongDates]["basePth"] + "\\" + SongDates
+        for SongFile in past_songs:
+            file_pth = past_songs[SongFile]["path"] # Full filepath to the file.
             try:
                 os.stat(file_pth)
             except FileNotFoundError:
                 print("Deleting " + file_pth + " from index, because it no longer exists")
-                items_to_delete.append(SongDates)
+                items_to_delete.append(SongFile)
         # delete items
         for item in items_to_delete:
-            del allSongs[item]
+            del past_songs[item]
         
-        with open("songs_cleaned.json", 'w', encoding='utf-8') as f:
-            json.dump(allSongs, f, indent=4, ensure_ascii=False)
-
-    with open("songs.json", 'r', encoding='utf-8') as allSongs:
-        allSongs: dict = json.load(allSongs)
-        # find all songs that no longer exist
-        items_to_delete = []
-        for SongDates in allSongs:
-            file_pth = OneDrive_pth + "\\" + allSongs[SongDates]["basePth"] + "\\" + SongDates
-            try:
-                os.stat(file_pth)
-            except FileNotFoundError:
-                print("Deleting " + file_pth + " from index, because it no longer exists")
-                items_to_delete.append(SongDates)
-        # delete items
-        for item in items_to_delete:
-            del allSongs[item]
-        
-        with open("songs.json", 'w', encoding='utf-8') as f:
-            json.dump(allSongs, f, indent=4, ensure_ascii=False)
-
-# Uncomment this to manually update the index
-# print(findNewFiles())
-# clean_up_index()
-
+        with open(PAST_SONGS_FILEPATH, 'w', encoding='utf-8') as f:
+            json.dump(past_songs, f, indent=4, ensure_ascii=False)
 
 def databaseBuilder():  # is for finding new files so as to only go through and add those insted of the whole library, which in the near future will be a headache when it gets bigger
     """Made to discover and add new songs to the database.
@@ -425,6 +403,11 @@ def findEmptySongNum(amount_to_generate=1):
 
 
 if __name__ == '__main__':
+    # Uncomment this to manually update the index
+    # print(findNewFiles())
+    # clean_up_index()
     # print(findEmptySongNum(amount_to_generate=20))
-    print(databaseBuilder())
-    
+    # print(databaseBuilder())
+    # findPastSongs()
+    # clean_up_index()
+    ...

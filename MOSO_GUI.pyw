@@ -3,7 +3,7 @@ from docx.shared import Pt
 import createfile
 import WordSongUpdater as SongUpdater
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import PhotoImage, messagebox
 from tkinter import ttk
 import tkinter.font as TkFont
 from tkinter import Button
@@ -12,7 +12,7 @@ import tkinter as tk
 from tkinter import ttk, messagebox, filedialog
 import ttkbootstrap as tbs
 from ttkbootstrap.constants import *
-
+from SPOT import OUTPUT_FOLDER
 
 class ModernSongManager:
     def __init__(self, master: tbs.Window):
@@ -54,7 +54,9 @@ class ModernSongManager:
         # Buttons frame
         buttons_frame = ttk.Frame(main_frame)
         buttons_frame.pack(fill=X, pady=(0, 20))
-        
+        #Set deafult value as 'Today'
+        self.day_var.set("Today")
+
         # Action buttons
         ttk.Button(buttons_frame, text="Add Song", command=self.add_song, style="success.TButton").pack(side=LEFT, padx=(0, 10))
         ttk.Button(buttons_frame, text="Delete Song", command=self.delete_song, style="danger.TButton").pack(side=LEFT, padx=(0, 10))
@@ -64,7 +66,7 @@ class ModernSongManager:
         ttk.Button(buttons_frame, text="Clear Songs", command=self.clr_listbox, style="secondary.TButton").pack(side=LEFT, padx=(0, 10))
         
         # Additional action buttons
-        ttk.Button(buttons_frame, text="Compatibility", command=self.Compatibility, style="primary.TButton").pack(side=LEFT, padx=(0, 10))
+        ttk.Button(buttons_frame, text="Past Songs Lookup", command=self.Past_Songs_Lookup, style="primary.TButton").pack(side=LEFT, padx=(0, 10))
         ttk.Button(buttons_frame, text="Possible Songs", command=self.viewPosSongs, style="primary.TButton").pack(side=LEFT, padx=(0, 10))
         ttk.Button(buttons_frame, text="Update Indexes", command=self.update_indicies, style="primary.TButton").pack(side=LEFT, padx=(0, 10))
         
@@ -95,7 +97,7 @@ class ModernSongManager:
         # self.master.bind("<BackSpace>", self.delete_song)
             
 
-        listy = []
+        # listy = []
 
     def add_song(self,event=None):
         song_num = self.entry_var.get()
@@ -207,7 +209,10 @@ class ModernSongManager:
 
     def create_File(self):
         print("Firing up databases...")
-        songsList = self.listbox.get(0, tk.END)
+        songsList:list[str] = self.listbox.get(0, tk.END)
+        if len(songsList) < 1:
+            messagebox.showinfo(title="Not Enough Songs", message="There appears to be no songs added, please add some songs then try again.")
+            return None
         print("Downloading songs...")
         #Now send cmd to make file
         try:    my_doc = createfile.generateSongFile(songsList)
@@ -227,30 +232,20 @@ class ModernSongManager:
         day = time.strftime('%d')
 
         #checks if path exists if not makes one
-        # TODO: Ask them if they want a system like ours for file sorting
-        # Or if they just want the file to be output somewhere?
-        # if os.path.exists("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear):
-        #     if self.day_var.get() == "Sunday":
-        #         my_doc.save("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear + "/" + month + "." + day + "." + year + "PORC_PORC.docx")
-        #         # quit(root.mainloop())
-        #     elif self.day_var.get() == "Tuesday":
-        #         my_doc.save("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear + "/" + month + "." + day + "." + year + ".docx")
-        #     else:
-        #         my_doc.save("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear + "/" + month + "." + day + "." + year + "TESTSAVE.docx")
-        # else:
-        #     os.mkdir("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear)
-        #     if self.day_var.get() == "Sunday":
-        #         my_doc.save("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear + "/" + month + "." + day + "." + year + "PORC_PORC.docx")
-        #     if self.day_var.get() == "Tuesday":
-        #         my_doc.save("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear + "/" + month + "." + day + "." + year + ".docx")
-        #     else:
-        #         my_doc.save("C:/Users/" + user + "/OneDrive/Երգեր/" + month + "." + fullYear + "/" + month + "." + day + "." + year + "TESTSAVE.docx")
-        if self.day_var.get() == "Porc":
-            my_doc.save( "output/PORC_" + month + "." + day + "." + year + "_PORC.docx")
-            # quit(root.mainloop())
-        # elif self.day_var.get() == "Today":
+        curr_month_folder = month + "." + fullYear
+        base_output_path = os.path.join(OUTPUT_FOLDER, curr_month_folder)
+        base_filename = month + "." + day + "." + year
+        if os.path.exists(base_output_path):
+            if self.day_var.get() == "Porc":
+                my_doc.save(base_output_path + "/" + "PORC_" + base_filename + "_PORC.docx")
+            else:
+                my_doc.save(base_output_path + "/" + base_filename + ".docx")
         else:
-            my_doc.save("output/"+month + "." + day + "." + year + ".docx")
+            os.mkdir(base_output_path)
+            if self.day_var.get() == "Porc":
+                my_doc.save(base_output_path + "/" + "PORC_" + base_filename + "_PORC.docx")
+            else:
+                my_doc.save(base_output_path + "/" + base_filename + ".docx")
         import scanningDir
         try:
             #Add the end once all is added clean up the indexes
@@ -258,7 +253,6 @@ class ModernSongManager:
             scanningDir.clean_up_index()
         except Exception as e:
             messagebox.showerror("File Open","A word doc is probably open, please close it and then try to create the file.")
-            # messagebox.showerror("Error Message", e)
 
 
     def UpdateFile(self):
@@ -271,7 +265,7 @@ class ModernSongManager:
         input_filename = None
         input_filename = fd.askopenfilenames(
                             title='Open a file',
-                            initialdir='C:/Users/{}/OneDrive/Երգեր'.format(os.environ.get("USERNAME")),
+                            initialdir=OUTPUT_FOLDER,
                             filetypes=filetypes)
         # Possibly throw a window to double check if it really is the file you want
         if input_filename != None and input_filename != '':
@@ -286,9 +280,9 @@ class ModernSongManager:
             else:
                 print("Closing window")
 
-    def Compatibility(self):
+    def Past_Songs_Lookup(self):
         song_num = self.entry.get()
-        bookType = self.radio_var.get()
+        # bookType = self.radio_var.get()
         myFont = TkFont.Font(family="Arial", size=18)
         import threading as th
 
