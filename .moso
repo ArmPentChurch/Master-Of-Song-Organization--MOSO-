@@ -1,6 +1,6 @@
 {
     "song_templates": "song_templates/",
     "database": "database.json",
-    "erger_directory": "C:/Users/moses/OneDrive/Երգարան Word Files",
+    "erger_directory": "/Users/movsesmovsesyan/Library/CloudStorage/OneDrive-Personal/Երգարան Word Files",
     "past_songs": "/past_songs.json"
 }
