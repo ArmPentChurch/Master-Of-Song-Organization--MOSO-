@@ -61,7 +61,7 @@ def songCollector(sunday_only=False, ignore_sundays=False, three_month_window=Tr
                     }
     return blocked_dict
 
-def past_song_search(data:dict, song_num, fast_method=False):
+def past_song_search(data:dict, song_num, fast_method=False) -> list[dict]:
     """
     Search for the occurences of a song inside of a collection of songs otherwise known as a day.
 
@@ -84,18 +84,18 @@ def past_song_search(data:dict, song_num, fast_method=False):
         if songList:
             for songNum in songList:
                 if song_num == songNum:
-                    found_dates.append(filename)
+                    found_dates.append({filename:metadata})
                     break
     return found_dates
 
-def songSearch(song_num:str, book:str):
+def songSearch(song_num:str, book = ''):
     """
     Basically a wrapper around past_song_search
     A function that searches for a song based on the song number and book provided.
 
     Parameters:
         song_num (str): The number of the song to search for.
-        book (str): The book to search for the song in.
+        book (str): (DEPRICATED) The book to search for the song in.
 
     Returns:
         dict: A dictionary containing information about the found song if it exists, None otherwise.
@@ -111,7 +111,7 @@ def songSearch(song_num:str, book:str):
         return result
     else:
         return None
-
+# print(songSearch('1'))
 def songChecker(book: str, songNum: str, three_month_window = True, ignore_sundays = False):
     """
     Checks if a song with the given song number in the specified book, has been sang in the last 3 months.
@@ -272,7 +272,7 @@ def clean_up_index():
         with open(PAST_SONGS_FILEPATH, 'w', encoding='utf-8') as f:
             json.dump(past_songs, f, indent=4, ensure_ascii=False)
 
-def databaseBuilder():  # is for finding new files so as to only go through and add those insted of the whole library, which in the near future will be a headache when it gets bigger
+def databaseBuilder(overwrite=True):  # is for finding new files so as to only go through and add those insted of the whole library, which in the near future will be a headache when it gets bigger
     """Made to discover and add new songs to the database.
     This will make a dict. stored and accessed as a json file. It will store the name of the doc, as well as all
     songs it found in the doc, a basepath where the os path for onedrive can be appended, and it will store the last
@@ -282,15 +282,15 @@ def databaseBuilder():  # is for finding new files so as to only go through and 
         None: Saves a json file.
     """
 
-    blacklist = ['Սուրբ ծնունդ', 'Պենտեկոստե', 'Զատիկ', 'Գոհաբանության Օր', 'Wedding', '2020', '2021',
-                 '2022', '01.2023']  # list of unneeded dirs
+    blacklist = ['']  # list of unneeded dirs
+    allowed_filetypes = ['docx', 'doc']
     with os.scandir(ERGER_DIRECTORY) as ErgerFolders:
         filePths = []
         for erg in ErgerFolders:
-            if erg.name not in blacklist:
-                erg_name = erg.name
+            erg_name = erg.name
+            erg_filetype = erg_name.split('.')[-1]
+            if erg.name not in blacklist and erg_filetype in allowed_filetypes:
                 filePths.append(
-                    # months.path,
                     erg.path
                 )
 
@@ -299,10 +299,11 @@ def databaseBuilder():  # is for finding new files so as to only go through and 
     from WordSongUpdater import getNums
     from datetime import datetime
     from os import stat
-    # with open("songs_database.json", mode='r', encoding='utf-8') as f:
-    #     allsongs = load(f)
 
-    allsongs = {}
+    if overwrite: allsongs = {}
+    else:
+        with open("songs_database.json", mode='r', encoding='utf-8') as f:
+            allsongs = load(f)
 
     for filepth in filePths:
         song_file_name:str = os.path.basename(filepth)
@@ -390,8 +391,8 @@ if __name__ == '__main__':
     # print(findNewFiles())
     # clean_up_index()
     # print(findEmptySongNum(amount_to_generate=20))
-    # print(databaseBuilder())
-    # findPastSongs()
+    print(databaseBuilder())
+    findPastSongs()
     # past_song_search("","123")
-    # clean_up_index()
+    clean_up_index()
     ...
