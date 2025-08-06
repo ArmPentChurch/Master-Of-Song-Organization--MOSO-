@@ -313,45 +313,36 @@ class ModernSongManager:
             import subprocess
             subprocess.run(["start","",path])
 
-        if song_num == "" or bookType == "":
-            if song_num == "" and (bookType == 'n' or bookType == 'o'):
-                messagebox.showerror("Error", "Please enter a song number")
-            elif bookType == "" and song_num != "":
-                messagebox.showerror("Error", "Please choose a database")
-            else:
-                messagebox.showerror("Error", "Please enter a song number and choose a database")
+        if song_num == "":
+            messagebox.showerror("Error", "Please enter a song number")
         else:
-            if self.radio_var.get() == 'n':
-                bookType = "New"
-            else:
-                bookType = "Old"
-
-            pastSongs=SD.songSearch(song_num, bookType)
+            pastSongs=SD.songSearch(song_num, "")
             if pastSongs:
                 # messagebox.showinfo(title="Compatability Chart",message="Filename/Date:"+pastSongs["Filename/Date"])
                 windowListSize = len(pastSongs)
                 viewWin = tk.Tk()
-                viewWin.geometry("280x{}".format(260*windowListSize))
+                viewWin.geometry("280x{}".format(200*windowListSize))
                 viewWin.title("Past Songs")
                 viewWin.columnconfigure(1,weight=1)    #confiugures column 1 to stretch with a scaler of 1.
                 viewWin.rowconfigure(0,weight=1)       #confiugures row 0 to stretch with a scaler of 1.
-                viewWin.bind("<Button-1>",clicked)
-                viewWin.bind("<Return>",clicked)
+                # viewWin.bind("<Button-1>",clicked)
+                # viewWin.bind("<Return>",clicked)
                 PastSongsListbox = tk.Listbox(viewWin)
                 PastSongsListbox.grid(row=0, column=1,sticky='nsew')
                 PastSongsListbox.config(width=25, height=18, font=myFont)
 
                 for attr in pastSongs:
-                    filename = attr['Filename/Date']
-                    folderPath = attr['basePath']
-                    PastSongsListbox.insert(tk.END,"Folder: " + folderPath)
-                    PastSongsListbox.insert(tk.END,"Filename/Date: " + filename)
-                    PastSongsListbox.insert(tk.END,"\nSongs:")
-                    for song in attr['songs']:
-                        PastSongsListbox.insert(tk.END,song) #making a list allows me to dodge the edge cases of song search results
-
+                    for filename, metadata in attr.items():
+                        # filename = attr['Filename/Date']
+                        basePath = metadata['basePth']
+                        PastSongsListbox.insert(tk.END,"Folder: " + basePath)
+                        PastSongsListbox.insert(tk.END,"Filename/Date: " + filename)
+                        PastSongsListbox.insert(tk.END,"\nSongs:")
+                        for song in metadata['songList']:
+                            PastSongsListbox.insert(tk.END,song) #making a list allows me to dodge the edge cases of song search results
+                    PastSongsListbox.insert(tk.END,"---------------")
             else:
-                messagebox.showinfo(title="Compatability Chart",message=f"Song number: {song_num} in Book: {bookType} not found.")
+                messagebox.showinfo(title="Compatability Chart",message=f"Song number: {song_num} not found.")
 
 
 if __name__ == "__main__":
