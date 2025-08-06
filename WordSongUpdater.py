@@ -87,7 +87,7 @@ def getDocTextAndIndentation(filename:str):
             left_indent = p.paragraph_format.left_indent
             right_indent = p.paragraph_format.right_indent
 
-            Placeholder = my_doc.add_paragraph(p.text)
+            Placeholder = my_doc.add_paragraph(p.text) # type: ignore
             Placeholder.paragraph_format.space_after = 0
             if first_line_indent is not None:
                 Placeholder.paragraph_format.first_line_indent = first_line_indent
@@ -104,7 +104,7 @@ def getDocTextAndIndentation(filename:str):
             })
         if "end" in p.text: # Def ending loc
             if doc.paragraphs[1].text:
-                saveDocFromDoc(my_doc, songNum)
+                saveDocFromDoc(my_doc, songNum) # type: ignore
             else:
                 print("No Pass!")
             #push song to text var and reset song var
@@ -147,7 +147,7 @@ def saveDocFromDoc(song_Doc: Document, songNum:str):
     Ergaran_Index[songNum]["latestVersion"] = file_path
     Ergaran_Index[songNum]["current_version"] = current_version
     style = song_Doc.styles['Normal']
-    font = style.font
+    font = style.font # type: ignore
     font.name = 'Arial'
     font.size = Pt(22)
     song_Doc.save(os.path.join(DATABASE_FILEPATH, file_path))
