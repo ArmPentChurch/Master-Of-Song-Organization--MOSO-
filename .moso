@@ -1,7 +1,7 @@
 {
     "song_templates": "song_templates/",
     "database": "database.json",
-    "erger_directory": "/Users/movsesmovsesyan/Library/CloudStorage/OneDrive-Personal/RED Words",
+    "erger_directory": "/Users/movsesmovsesyan/NewDb",
     "past_songs": "past_songs.json",
     "output_folder": "/Users/movsesmovsesyan/New Folder"
 }
