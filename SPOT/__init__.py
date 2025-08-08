@@ -17,3 +17,14 @@ with open(".moso", 'r', encoding='utf-8') as session_file:
     PAST_SONGS_FILEPATH:str = session_data["past_songs"]
     ALL_LYRICS:str = session_data["all_lyrics"]
     MAX_SONGS:int = session_data["max_songs"]
+
+import warnings
+from functools import wraps
+
+def incomplete(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        warnings.warn(f"{func.__name__} is incomplete - use at your own risk",
+                     UserWarning, stacklevel=2)
+        return func(*args, **kwargs)
+    return wrapper
