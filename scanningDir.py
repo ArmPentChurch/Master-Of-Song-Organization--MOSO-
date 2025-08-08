@@ -359,10 +359,10 @@ def databaseBuilder(overwrite=True):  # is for finding new files so as to only g
         # Returns sorted keys
         sorted_keys = sorted(allsongs.keys(), key=int)
         # Adding the songs in new sorted order
-        new_dict = {}
+        sorted_dict = {}
         for key in sorted_keys:
-            new_dict[key] = allsongs[key]
-        return new_dict
+            sorted_dict[key] = allsongs[key]
+        return sorted_dict
     allsongs = sortEntries()
     # save to json
     with open(DATABASE_FILEPATH, mode='w', encoding='utf-8') as saveFile:

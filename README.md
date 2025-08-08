@@ -47,9 +47,6 @@ python config.py
 
 # Run the gui with
 python moso.pyw
-
-# Run the webapp
-python server.py
 ```
 
 ## Usage
