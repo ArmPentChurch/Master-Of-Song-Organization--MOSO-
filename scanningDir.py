@@ -1,7 +1,7 @@
 import json
 from pprint import pprint
 import os, datetime, re
-from SPOT import DATABASE_FILEPATH, ERGER_DIRECTORY, OUTPUT_FOLDER, PAST_SONGS_FILEPATH
+from SPOT import DATABASE_FILEPATH, ERGER_DIRECTORY, MAX_SONGS, OUTPUT_FOLDER, PAST_SONGS_FILEPATH
 
 # gets songs fron recentsongs and sorts by last three months
 def songCollector(sunday_only=False, ignore_sundays=False, three_month_window=True, search_range=90):
@@ -367,24 +367,17 @@ def databaseBuilder(overwrite=True):  # is for finding new files so as to only g
         dump(allsongs, saveFile, indent=4, ensure_ascii=False)
 
     # print(allsongs)
-@DeprecationWarning
 def findEmptySongNum(amount_to_generate=1):
-   #doesn't need a book, because all holes in songs should be in olds
-   with open('wordSongsIndex.json', 'r', encoding='utf-8') as f:
+   with open(DATABASE_FILEPATH, 'r', encoding='utf-8') as f:
     songs:dict = json.load(f)
-    if amount_to_generate == 1:
-            if not songs["SongNum"].get(str(x), None): return str(x)
-    elif amount_to_generate > 1:
-        found_nums = []
-        for x in range(1,1000):
-            if len(found_nums) < amount_to_generate:
-                if not songs["SongNum"].get(str(x), None):
-                    songs["SongNum"][x] = True
-                    found_nums.append(x)
-            else:
-                break
-        return found_nums
-   return '1001'
+    found_nums = []
+    for x in range(1,MAX_SONGS):
+        if len(found_nums) < amount_to_generate:
+            if not songs.get(str(x), None):
+                found_nums.append(x)
+        else:
+            break
+    return found_nums
 
 # TODO: Add a function to add new songs,
 # Scenario: prog sees a new song, it looks for a empty song num
@@ -394,8 +387,9 @@ if __name__ == '__main__':
     # print(findNewFiles())
     # clean_up_index()
     # print(findEmptySongNum(amount_to_generate=20))
-    print(databaseBuilder())
-    findPastSongs()
+    # print(databaseBuilder())
+    # print(findEmptySongNum())
+    # findPastSongs()
     # past_song_search("","123")
-    clean_up_index()
+    # clean_up_index()
     ...

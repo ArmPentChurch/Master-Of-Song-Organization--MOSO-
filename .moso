@@ -4,5 +4,6 @@
     "database": "database.json",
     "past_songs": "past_songs.json",
     "all_lyrics": "AllLyrics.json",
-    "song_templates": "song_templates/"
+    "song_templates": "song_templates/",
+    "max_songs": 10000
 }
