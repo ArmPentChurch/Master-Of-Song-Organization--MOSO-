@@ -42,11 +42,14 @@ cd Master-Of-Song-Organization--MOSO-
 # Install Dependencies
 pip install -r requirements.txt
 
-# Run the Script
-python newgui.pyw
+# Run the config script
+python config.py
+
+# Run the gui with
+python moso.pyw
 
 # Run the webapp
-python app.py
+python server.py
 ```
 
 ## Usage

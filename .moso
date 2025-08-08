@@ -1,8 +1,8 @@
 {
-    "song_templates": "song_templates/",
+    "erger_directory": "/Users/movsesmovsesyan/orb.db",
+    "output_folder": "/Users/movsesmovsesyan/Postman",
     "database": "database.json",
-    "erger_directory": "/Users/movsesmovsesyan/NewDb",
     "past_songs": "past_songs.json",
-    "output_folder": "/Users/movsesmovsesyan/New Folder",
-    "all_lyrics": "AllLyrics.json"
+    "all_lyrics": "AllLyrics.json",
+    "song_templates": "song_templates/"
 }
