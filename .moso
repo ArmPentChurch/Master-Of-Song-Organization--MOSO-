@@ -1,6 +1,6 @@
 {
-    "erger_directory": "/Users/movsesmovsesyan/orb.db",
-    "output_folder": "/Users/movsesmovsesyan/Postman",
+    "erger_directory": "/Users/movsesmovsesyan/NewDb",
+    "output_folder": "/Users/movsesmovsesyan/New_Folder",
     "database": "database.json",
     "past_songs": "past_songs.json",
     "all_lyrics": "AllLyrics.json",
