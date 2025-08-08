@@ -1,7 +1,7 @@
 import json
 from pprint import pprint
 import os, datetime, re
-from SPOT import ERGER_DIRECTORY, OUTPUT_FOLDER, PAST_SONGS_FILEPATH
+from SPOT import DATABASE_FILEPATH, ERGER_DIRECTORY, OUTPUT_FOLDER, PAST_SONGS_FILEPATH
 
 # gets songs fron recentsongs and sorts by last three months
 def songCollector(sunday_only=False, ignore_sundays=False, three_month_window=True, search_range=90):
@@ -138,13 +138,14 @@ def songChecker(book: str, songNum: str, three_month_window = True, ignore_sunda
     song_search_results = past_song_search(data=blocked_list, song_num=songNum)
     date_newest = datetime.datetime.strptime("01.01.70", date_format)
     if song_search_results:
-        # print(song_search_results)
-        for key in song_search_results:
-            # print(key)
-            date_compare = datetime.datetime.strptime(key, date_format)
-            if date_newest < date_compare:
-                date_newest = date_compare
-        return True, date_newest.strftime(date_format)
+        for entry in song_search_results:
+            # entry = {'08.08.25': {'songList': ['312'], 'basePth': '08.2025'}}
+            for key, value in entry.items():
+                print(key)
+                date_compare = datetime.datetime.strptime(key, date_format)
+                if date_newest < date_compare:
+                    date_newest = date_compare
+            return True, date_newest.strftime(date_format)
         # return True, date_newest
     return False
 
@@ -302,7 +303,7 @@ def databaseBuilder(overwrite=True):  # is for finding new files so as to only g
 
     if overwrite: allsongs = {}
     else:
-        with open("songs_database.json", mode='r', encoding='utf-8') as f:
+        with open(DATABASE_FILEPATH, mode='r', encoding='utf-8') as f:
             allsongs = load(f)
 
     for filepth in filePths:
@@ -362,7 +363,7 @@ def databaseBuilder(overwrite=True):  # is for finding new files so as to only g
         return new_dict
     allsongs = sortEntries()
     # save to json
-    with open("database.json", mode='w', encoding='utf-8') as saveFile:
+    with open(DATABASE_FILEPATH, mode='w', encoding='utf-8') as saveFile:
         dump(allsongs, saveFile, indent=4, ensure_ascii=False)
 
     # print(allsongs)
@@ -385,7 +386,9 @@ def findEmptySongNum(amount_to_generate=1):
         return found_nums
    return '1001'
 
-
+# TODO: Add a function to add new songs,
+# Scenario: prog sees a new song, it looks for a empty song num
+# Finds none, and starts to add/make new ones incrementing by a factor of one.
 if __name__ == '__main__':
     # Uncomment this to manually update the index
     # print(findNewFiles())

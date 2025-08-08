@@ -2,14 +2,15 @@
     "1": {
         "Title": "1 Եղբայրնե՛ր, ցնծացե՛ք v4",
         "v1": "/Users/movsesmovsesyan/NewDb/1 Եղբայրնե՛ր, ցնծացե՛ք v4.docx",
-        "latestVersion": "/Users/movsesmovsesyan/NewDb/1 Եղբայրնե՛ր, ցնծացե՛ք v4.docx",
-        "current_version": "1",
+        "latestVersion": "/Users/movsesmovsesyan/NewDb/1 1 Եղբայրնե՛ր, ցնծացե՛ք v4 v2",
+        "current_version": 2,
         "key": "",
         "speed": "",
         "style": "",
         "song_type": "",
         "timeSig": "",
-        "Comments": ""
+        "Comments": "",
+        "v2": "/Users/movsesmovsesyan/NewDb/1 1 Եղբայրնե՛ր, ցնծացե՛ք v4 v2"
     },
     "4": {
         "Title": "4 Ինչպե՞ս երթամ պարապ ձեռքով, v2",
@@ -764,8 +765,8 @@
     "123": {
         "Title": "123 Ինչո՞ւ ես, ի՛մ ընկեր, տխուր այդպես, v2",
         "v1": "/Users/movsesmovsesyan/NewDb/123 Ինչո՞ւ ես, ի՛մ ընկեր, տխուր այդպես, v2.docx",
-        "latestVersion": "/Users/movsesmovsesyan/NewDb/123 123 Ինչո՞ւ ես, ի՛մ ընկեր, տխուր այդպես, v2 v3",
-        "current_version": 3,
+        "latestVersion": "/Users/movsesmovsesyan/NewDb/123 123 Ինչո՞ւ ես, ի՛մ ընկեր, տխուր այդպես, v2 v5",
+        "current_version": 5,
         "key": "",
         "speed": "",
         "style": "",
@@ -773,7 +774,9 @@
         "timeSig": "",
         "Comments": "",
         "v2": "/Users/movsesmovsesyan/NewDb/123 123 Ինչո՞ւ ես, ի՛մ ընկեր, տխուր այդպես, v2 v2",
-        "v3": "/Users/movsesmovsesyan/NewDb/123 123 Ինչո՞ւ ես, ի՛մ ընկեր, տխուր այդպես, v2 v3"
+        "v3": "/Users/movsesmovsesyan/NewDb/123 123 Ինչո՞ւ ես, ի՛մ ընկեր, տխուր այդպես, v2 v3",
+        "v4": "/Users/movsesmovsesyan/NewDb/123 123 Ինչո՞ւ ես, ի՛մ ընկեր, տխուր այդպես, v2 v4",
+        "v5": "/Users/movsesmovsesyan/NewDb/123 123 Ինչո՞ւ ես, ի՛մ ընկեր, տխուր այդպես, v2 v5"
     },
     "125": {
         "Title": "125 Փրկի՛չ, գիտեիր հոգուս հույզերը",
@@ -2099,14 +2102,15 @@
     "320": {
         "Title": "320 Միակ Աստվածն է Եհովան, (2) v2",
         "v1": "/Users/movsesmovsesyan/NewDb/320 Միակ Աստվածն է Եհովան, (2) v2.docx",
-        "latestVersion": "/Users/movsesmovsesyan/NewDb/320 Միակ Աստվածն է Եհովան, (2) v2.docx",
-        "current_version": "1",
+        "latestVersion": "/Users/movsesmovsesyan/NewDb/320 320 Միակ Աստվածն է Եհովան, (2) v2 v2",
+        "current_version": 2,
         "key": "",
         "speed": "",
         "style": "",
         "song_type": "",
         "timeSig": "",
-        "Comments": ""
+        "Comments": "",
+        "v2": "/Users/movsesmovsesyan/NewDb/320 320 Միակ Աստվածն է Եհովան, (2) v2 v2"
     },
     "324": {
         "Title": "324 Ու սրտիս անհուն թևերով խնդուն, v2",
@@ -4414,6 +4418,18 @@
         "Title": "",
         "v1": "/Users/movsesmovsesyan/NewDb/684  v1",
         "latestVersion": "/Users/movsesmovsesyan/NewDb/684  v1",
+        "current_version": 1,
+        "key": "",
+        "speed": "",
+        "style": "",
+        "song_type": "",
+        "timeSig": "",
+        "Comments": ""
+    },
+    "733": {
+        "Title": "",
+        "v1": "/Users/movsesmovsesyan/NewDb/733  v1",
+        "latestVersion": "/Users/movsesmovsesyan/NewDb/733  v1",
         "current_version": 1,
         "key": "",
         "speed": "",

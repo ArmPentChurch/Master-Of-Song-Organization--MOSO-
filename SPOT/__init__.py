@@ -15,3 +15,4 @@ with open(".moso", 'r', encoding='utf-8') as session_file:
     ERGER_DIRECTORY:str = session_data["erger_directory"]
     OUTPUT_FOLDER:str =  session_data["output_folder"]
     PAST_SONGS_FILEPATH:str = session_data["past_songs"]
+    ALL_LYRICS:str = session_data["all_lyrics"]

@@ -6,7 +6,7 @@ Welcome to the MOSO project! 🎵
 ![ComfyUI_temp_dffmr_00017_ (2)](https://github.com/Moses2917/Master-Of-Song-Organization--MOSO-/assets/65843759/a405ddc3-63bd-4792-a912-9e3801b2375b)
 
 
-**This project is still a major work in progress with many features yet to come! This means that everything on the readme, is not necessarily fully implimented yet, but it will be soon!** 
+**This project is still a major work in progress with many features yet to come! This means that everything on the readme, is not necessarily fully implimented yet, but it will be soon!**
 
 ## Table of Contents
 - [Introduction](#introduction)
@@ -53,6 +53,10 @@ python app.py
 MOSO is designed with simplicity in mind. Once you launch the script, you'll be greeted by an easy-to-use interface that lets you manage your song lyrics effortlessly. Add, update, or delete song lyrics by following the on-screen instructions. MOSO also comes with a web app that runs locally and allows modification to the json index of the songs by anyone who access it.
 
 Don't forget to explore the customization options to make your church's music library truly your own.
+
+## Supported File Types
+Supported File Types: DOCX, DOC
+Currently MOSO supports only songs stored under one directory and stored as a docx or doc file. In the future we plan to support .pages and possibily even pdf if the text is there.
 
 ## Contributing
 We welcome contributions from the community to make MOSO even better. If you have ideas, bug reports, or feature requests, please create an issue. Better yet, fork the project, make your changes, and submit a pull request. Let's make church song lyric organization great together!

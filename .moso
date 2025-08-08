@@ -3,5 +3,6 @@
     "database": "database.json",
     "erger_directory": "/Users/movsesmovsesyan/NewDb",
     "past_songs": "past_songs.json",
-    "output_folder": "/Users/movsesmovsesyan/New Folder"
+    "output_folder": "/Users/movsesmovsesyan/New Folder",
+    "all_lyrics": "AllLyrics.json"
 }

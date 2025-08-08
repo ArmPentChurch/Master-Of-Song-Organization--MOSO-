@@ -4,7 +4,7 @@ from turtle import title
 from os import path as pth, remove, environ
 from docx.document import Document
 from docx.shared import Pt
-from utils.getAllLyrics import updateSongLyrics
+from getAllLyrics import updateSongLyrics
 from SPOT import DATABASE_FILEPATH, ERGER_DIRECTORY
 
 month = time.strftime('%m')
@@ -155,20 +155,11 @@ def saveDocFromDoc(song_Doc: Document, songNum:str):
         #Book_Index["SongNum"] = dict(sorted(Book_Index["SongNum"].items(), key=lambda x: int(x[0]))) # should sort the songs before saving
         json.dump(Ergaran_Index, f, indent=4, ensure_ascii=False)
     print(file_path)
-
-    if not False:
-        # TODO: Update!
-        if updateSongLyrics(book="new", songNum=songNum, lyrics = song_Doc) == None:
-            print("Lyrics not Updated")
-            print(f"Song Num: {songNum} Book: New")
-        else:
-            print("Lyrics Updated")
-    # else:
-    #     if updateSongLyrics(book="old", songNum=songNum, lyrics = song_Doc) == None:
-    #         print("Lyrics not Updated")
-    #         print(f"Song Num: {songNum} Book: New")
-    #     else:
-    #         print("Lyrics Updated")
+    if updateSongLyrics(songNum=songNum, lyrics = song_Doc) == False:
+        print("Lyrics not Updated")
+        print(f"Song Num: {songNum}")
+    else:
+        print("Lyrics Updated")
 
 def getNums(filename: str, return_list=False):
     """Reads the file and returns a dict with the text along with a bool if it is from the old book"""

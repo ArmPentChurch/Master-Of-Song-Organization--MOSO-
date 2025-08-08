@@ -76,7 +76,7 @@ class ModernSongManager:
         ttk.Button(buttons_frame, text="Past Songs Lookup", command=self.Past_Songs_Lookup, style="primary.TButton").pack(side=LEFT, padx=(0, 10))
         # DEPRICATED by simple db.get(songnum) when adding a song
         # ttk.Button(buttons_frame, text="Possible Songs", command=self.viewPosSongs, style="primary.TButton").pack(side=LEFT, padx=(0, 10))
-        ttk.Button(buttons_frame, text="Update Indexes", command=self.update_indicies, style="primary.TButton").pack(side=LEFT, padx=(0, 10))
+        ttk.Button(buttons_frame, text="Update Past Songs", command=self.update_indicies, style="primary.TButton").pack(side=LEFT, padx=(0, 10))
 
         # Listbox frame
         self.listbox_frame = ttk.Frame(main_frame)
@@ -105,7 +105,7 @@ class ModernSongManager:
         # self.master.bind("<BackSpace>", self.delete_song)
 
 
-        # listy = []
+        self.listy = []
 
     def add_song(self,event=None):
         song_num = self.entry_var.get()
@@ -141,12 +141,12 @@ class ModernSongManager:
         if not curr_selection:
             messagebox.showerror("Error", "Please select a song to edit")
         else:
-            curr_song = self.listbox.get(curr_selection)
-            song_num, property = curr_song.split(" (")
-            property = property[0]
+            song_num = self.listbox.get(curr_selection)
+            # song_num, property = curr_song.split(" (")
+            # property = property[0]
             self.entry.delete(0, tk.END)
             self.entry.insert(0, song_num)
-            self.radio_var.set(property)
+            # self.radio_var.set(property)
             self.listbox.delete(curr_selection)
             # update_indexes()
 
@@ -192,7 +192,7 @@ class ModernSongManager:
     def update_indicies(self):
         import scanningDir
         try:
-            scanningDir.findNewFiles()
+            scanningDir.findPastSongs()
             #Add the end once all is added clean up the indexes
             scanningDir.clean_up_index()
         except Exception as e:
@@ -294,7 +294,7 @@ class ModernSongManager:
         # bookType = self.radio_var.get()
         myFont = TkFont.Font(family="Arial", size=18)
         import threading as th
-
+        # Unused
         def clicked(event=None): #curselection give the index of the thing clicked, in a tuple ie:(10,)
             index = PastSongsListbox.curselection()[0]
             selected_item = PastSongsListbox.get(index)
