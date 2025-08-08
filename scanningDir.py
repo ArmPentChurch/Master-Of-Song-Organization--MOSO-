@@ -130,8 +130,10 @@ def songChecker(book: str, songNum: str, three_month_window = True, ignore_sunda
         blocked_list = songCollector()
     elif not three_month_window:
         blocked_list = songCollector(sunday_only=False, ignore_sundays=True, three_month_window=False, search_range=960) # This is for an overall search for latest date on a song
-    if ignore_sundays:
+    elif ignore_sundays:
         blocked_list = songCollector(sunday_only=False, ignore_sundays=True)
+    else: # Just in case all else fails, it might be redundant. But its safe.
+        blocked_list = songCollector()
 
     date_format = "%m.%d.%y"
     # print(blocked_list)
