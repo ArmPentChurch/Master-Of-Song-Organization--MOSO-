@@ -34,7 +34,7 @@ Before you dive into the world of organized church song lyric management, you ne
 
 ```bash
 # Clone the Repository
-git clone https://github.com/Moses2917/Master-Of-Song-Organization--MOSO-.git
+git clone https://github.com/ArmPentChurch/Master-Of-Song-Organization--MOSO-.git
 
 # Navigate to the Project Directory
 cd Master-Of-Song-Organization--MOSO-
@@ -44,6 +44,9 @@ pip install -r requirements.txt
 
 # Run the config script
 python config.py
+
+# Run the database setup script
+python setup_dbs.py
 
 # Run the gui with
 python moso.pyw
