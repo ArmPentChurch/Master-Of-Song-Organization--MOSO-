@@ -31,7 +31,7 @@ Here's what MOSO brings to the table:
 ## Getting Started
 
 Before you dive into the world of organized church song lyric management, you need to set up MOSO on your machine. Follow these simple steps:
-
+If you have git use git clone, if not please download the project from the releases page.
 ```bash
 # Clone the Repository
 git clone https://github.com/ArmPentChurch/Master-Of-Song-Organization--MOSO-.git
