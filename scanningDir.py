@@ -284,7 +284,7 @@ def databaseBuilder(overwrite=True):  # is for finding new files so as to only g
     Returns:
         None: Saves a json file.
     """
-
+    from SPOT import SONG_NUMS_SONG_TITLES
     blacklist = ['']  # list of unneeded dirs
     allowed_filetypes = ['docx', 'doc']
     with os.scandir(ERGER_DIRECTORY) as ErgerFolders:
@@ -308,6 +308,10 @@ def databaseBuilder(overwrite=True):  # is for finding new files so as to only g
         with open(DATABASE_FILEPATH, mode='r', encoding='utf-8') as f:
             allsongs = load(f)
 
+    if SONG_NUMS_SONG_TITLES:
+        with open(SONG_NUMS_SONG_TITLES, 'r', encoding='utf-8') as f:
+            nums_and_titles = load(f)
+
     for filepth in filePths:
         song_file_name:str = os.path.basename(filepth)
         song_num: str = re.findall(r"\d+", song_file_name)[0] # Assumes that the song number is the first set of numbers that appears in the filename
@@ -324,7 +328,7 @@ def databaseBuilder(overwrite=True):  # is for finding new files so as to only g
                     # if the date modified of a file is greater than the one on file repalce it
                     allsongs[song_num] = {
                         # 'dateMod': stat(filepth).st_mtime,
-                        "Title": song_file_name.split('.')[0], # Eg: Աստված իմ.docx --> Աստված իմ
+                        "Title": nums_and_titles[song_num] if SONG_NUMS_SONG_TITLES else song_file_name.split('.')[0], # Eg: Աստված իմ.docx --> Աստված իմ
                         "v1": filepth,
                         "latestVersion": filepth,
                         "current_version": "1",
@@ -340,7 +344,7 @@ def databaseBuilder(overwrite=True):  # is for finding new files so as to only g
             else:
                 allsongs[song_num] = {
                     # 'dateMod': stat(filepth).st_mtime,
-                    "Title": song_file_name.split('.')[0],
+                    "Title": nums_and_titles[song_num] if SONG_NUMS_SONG_TITLES else song_file_name.split('.')[0],
                     "v1": filepth,
                     "latestVersion": filepth,
                     "current_version": "1", # Easier when recalling info, that everything is a str cmp to having to do logic to parse if string or not

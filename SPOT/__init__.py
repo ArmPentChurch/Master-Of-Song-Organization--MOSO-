@@ -17,6 +17,7 @@ with open(".moso", 'r', encoding='utf-8') as session_file:
     PAST_SONGS_FILEPATH:str = session_data["past_songs"]
     ALL_LYRICS:str = session_data["all_lyrics"]
     MAX_SONGS:int = session_data["max_songs"]
+    SONG_NUMS_SONG_TITLES = session_data["song_nums_and_titles"]
 
 import warnings
 from functools import wraps

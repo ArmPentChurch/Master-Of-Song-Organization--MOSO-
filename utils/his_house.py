@@ -96,10 +96,10 @@ titles_from_tsank()
 song_nums_and_titles = sortEntries(song_nums_and_titles)
 # print(song_nums_and_titles)
 def export_titles(all_song_titles):
-    with open("utils/idk.json", 'w', encoding='utf-8') as file:
+    with open("utils/song_nums_and_titles.json", 'w', encoding='utf-8') as file:
         dump(all_song_titles, file, indent=4, ensure_ascii=False)
 
-# export_titles(all_song_titles)
+export_titles(song_nums_and_titles)
 
 class IncrementedList():
     def __init__(self, curr_list) -> None:
@@ -113,7 +113,7 @@ class IncrementedList():
 
     def get_current_value(self): return self.list[self.curr_index]
     def __next__(self) -> tuple[str,str]:
-        if len(self.list) != self.curr_index+1:
+        if len(self.list) != self.curr_index:
             self.curr_index += 1
             return self.list[self.curr_index-1]
         else:
@@ -157,9 +157,11 @@ current_title: str = current_song[1]
 current_songnum: str = current_song[0]
 title_line = False # For avoiding adding the title to the doc
 previous_line = '' # Used to get rid of all extra empty lines
+songnum = ''
+EndOfList = False # Used to know when to exit, but still need to make the doc
 for line in doc.paragraphs:
-    current_line = sub(pattern=r"[^ա-ֆԱ-Ֆ-և\s]", repl="",string=line.text,count=0,flags=MULTILINE)
-    if (current_title in current_line and line.runs[0].bold):
+    current_line = sub(pattern=r"[^ա-ֆԱ-Ֆ-և\s]", repl="",string=line.text.strip(),count=0,flags=MULTILINE)
+    if (current_title in current_line and line.runs[0].bold and not EndOfList):
 
         # next_song: tuple[str,str] = next(all_songs)
         # next_title: str = next_song[1]
@@ -173,7 +175,8 @@ for line in doc.paragraphs:
         try:
             current_song: tuple[str,str] = next(all_songs)
         except StopIteration:
-            break
+            # break
+            EndOfList = True
         current_title: str = current_song[1]
         current_songnum: str = current_song[0]
 
@@ -188,7 +191,7 @@ for line in doc.paragraphs:
             right_indent = format.right_indent
             new_par = song_docs[songnum].add_paragraph(line.text)#, line.style)
             style = song_docs[songnum].styles['Normal']
-            font = style.font
+            font = style.font # type: ignore
             font.name = 'Arial'
             font.size = Pt(22)
             # Set proper indentation
