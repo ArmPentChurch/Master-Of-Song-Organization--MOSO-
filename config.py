@@ -1,23 +1,20 @@
 import os
 import json
 import time
-from concurrent.futures import ThreadPoolExecutor, thread
 # Used for a better input(),
 # doesn't even need to be called!
-import readline
-# Custom scripts
-from getAllLyrics import getAllLyrics
-from scanningDir import databaseBuilder
+if os.name == "posix":
+    import readline
 
 def save_config() -> None:
     with open(".moso", 'w', encoding='utf-8') as cfg_file:
         json.dump(moso_config_file, cfg_file, indent=4, ensure_ascii=False)
         cfg_file.flush()
     time.sleep(2) # Wait for config file to save
-def open_config() -> dict:
+def open_config() -> dict[str,str]:
     with open(".moso", 'r', encoding='utf-8') as cfg_file:
         return json.load(cfg_file)
-def get_folder_path_from_input(prompt=''):
+def get_folder_path_from_input(prompt=""):
     while True:
         folder_path = input("Please enter the path to the folder (no spaces, or put it in quotation marks): " if not prompt else prompt).strip().strip("'").strip('"')
         if os.name == 'posix':
