@@ -42,7 +42,7 @@ class SearchEngine:
     def preprocess_text(self, text):
         """Standardize text for better matching"""
         text = text.lower()
-        text = re.sub(pattern=r"[^ա-ֆԱ-Ֆ\s]", repl="",string=text,count=0,flags=re.MULTILINE)
+        text = re.sub(pattern=r"[^ա-ֆԱ-Ֆ-և\s]", repl="",string=text,count=0,flags=re.MULTILINE)
         return text.strip()
 
     def create_tfidf_matrix(self, lyrics):
