@@ -75,8 +75,8 @@ class ModernSongManager:
         # Additional action buttons
         ttk.Button(buttons_frame, text="Past Songs Lookup", command=self.Past_Songs_Lookup, style="primary.TButton").pack(side=LEFT, padx=(0, 10))
         # DEPRICATED by simple db.get(songnum) when adding a song
-        # ttk.Button(buttons_frame, text="Possible Songs", command=self.viewPosSongs, style="primary.TButton").pack(side=LEFT, padx=(0, 10))
         ttk.Button(buttons_frame, text="Update Past Songs", command=self.update_indicies, style="primary.TButton").pack(side=LEFT, padx=(0, 10))
+        ttk.Button(buttons_frame, text="Search", command=self.songSearch, style="primary.TButton").pack(side=LEFT, padx=(0, 10))
 
         # Listbox frame
         self.listbox_frame = ttk.Frame(main_frame)
@@ -371,6 +371,10 @@ class ModernSongManager:
                     PastSongsListbox.insert(tk.END,"---------------")
             else:
                 messagebox.showinfo(title="Compatability Chart",message=f"Song number: {song_num} not found.")
+
+    def songSearch(self):
+        search_window = tk.Tk("Lyrics Search")
+        search_window.geometry("280x760")
 
 
 if __name__ == "__main__":

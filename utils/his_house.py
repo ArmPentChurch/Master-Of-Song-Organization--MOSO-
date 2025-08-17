@@ -96,6 +96,7 @@ titles_from_tsank()
 song_nums_and_titles = sortEntries(song_nums_and_titles)
 # print(song_nums_and_titles)
 def export_titles(all_song_titles):
+    #TODO: Make this a tsank.json
     with open("utils/song_nums_and_titles.json", 'w', encoding='utf-8') as file:
         dump(all_song_titles, file, indent=4, ensure_ascii=False)
 
